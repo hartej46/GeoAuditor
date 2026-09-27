@@ -37,11 +37,11 @@
 - [x] **P0 #5** — Results comparison view (table/cards)
 - [x] **P0 #6** — Pre-tested demo flow (end-to-end)
 
-## P1 Progress (items 7–10) — *Implementation plan: `P1_IMPLEMENTATION_PLAN.md`*
+## P1 Progress (items 7–10) — *Implementation plan: `P1_IMPLEMENTATION_PLAN.md` & `P1_9_MULTI_QUERY_PLAN.md`*
 
 - [x] **P1 #7** — "Why you're missing" gap analysis
 - [x] **P1 #8** — Actionable recommendations
-- [ ] **P1 #9** — Multi-query visibility score
+- [x] **P1 #9** — Multi-query visibility score
 - [ ] **P1 #10** — Historical/trend view
 
 ## P2 Progress (items 11–13)
