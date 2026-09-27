@@ -139,4 +139,35 @@ async function getScan(req, res) {
   }
 }
 
-module.exports = { runScan, getScan };
+/**
+ * POST /api/scan/multi — Run a multi-query visibility scan.
+ */
+async function runMultiScan(req, res) {
+  try {
+    const { brand, competitors, queries } = req.body;
+
+    if (!brand || typeof brand !== 'string' || !brand.trim()) {
+      return res.status(400).json({ error: 'Brand name is required.' });
+    }
+    if (!queries || !Array.isArray(queries) || queries.length < 2) {
+      return res.status(400).json({ error: 'At least 2 queries are required for multi-query scan.' });
+    }
+
+    const { runMultiQueryScan } = require('../services/multiQueryScanner');
+    const result = await runMultiQueryScan(brand, competitors || [], queries);
+
+    res.json({
+      timestamp: new Date().toISOString(),
+      demoMode: isDemoMode(),
+      brand: brand.trim(),
+      competitors: (competitors || []).map(c => c.trim()).filter(Boolean),
+      ...result
+    });
+  } catch (err) {
+    console.error('[scan] runMultiScan error:', err.message);
+    res.status(500).json({ error: err.message || 'Multi-query scan failed.' });
+  }
+}
+
+module.exports = { runScan, getScan, runMultiScan };
+
