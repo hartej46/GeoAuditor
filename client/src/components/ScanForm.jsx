@@ -10,9 +10,18 @@ import { useState } from 'react';
  *  - Demo fill presets
  *  - Primary burnt sienna CTA
  */
+const LOCATION_OPTIONS = [
+  { label: 'United States (Default)', location: 'United States', gl: 'us' },
+  { label: 'Mumbai, Maharashtra, India', location: 'Mumbai, Maharashtra, India', gl: 'in' },
+  { label: 'Delhi, India', location: 'Delhi, India', gl: 'in' },
+  { label: 'London, England, United Kingdom', location: 'London, England, United Kingdom', gl: 'uk' },
+  { label: 'Tokyo, Japan', location: 'Tokyo, Japan', gl: 'jp' },
+];
+
 export default function ScanForm({ onScan, loading }) {
   const [query, setQuery] = useState('best noise cancelling headphones');
   const [brand, setBrand] = useState('Sony WH-1000XM5');
+  const [selectedLocation, setSelectedLocation] = useState('United States');
   const [competitors, setCompetitors] = useState([
     'Bose QuietComfort Ultra',
     'Apple AirPods Max',
@@ -49,10 +58,14 @@ export default function ScanForm({ onScan, loading }) {
       .map((c) => c.trim())
       .filter(Boolean);
 
+    const locObj = LOCATION_OPTIONS.find(l => l.location === selectedLocation) || LOCATION_OPTIONS[0];
+
     onScan({
       brand: brand.trim(),
       competitors: filteredCompetitors,
       query: query.trim(),
+      location: locObj.location,
+      gl: locObj.gl,
     });
   }
 
@@ -103,6 +116,30 @@ export default function ScanForm({ onScan, loading }) {
             >
               "best crm for small business"
             </button>
+          </div>
+        </div>
+
+        {/* Target Location */}
+        <div className="form-group">
+          <label className="form-label" htmlFor="location-select">
+            <span>Target Location & Market (P2 #12)</span>
+            <span className="form-label__sub">SerpApi location & gl parameter</span>
+          </label>
+          <div className="input-with-icon">
+            <span className="material-symbols-outlined input-icon">location_on</span>
+            <select
+              id="location-select"
+              className="form-input"
+              style={{ appearance: 'auto', cursor: 'pointer' }}
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+            >
+              {LOCATION_OPTIONS.map(opt => (
+                <option key={opt.location} value={opt.location}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

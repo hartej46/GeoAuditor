@@ -3,8 +3,17 @@ import React, { useState } from 'react';
 /**
  * MultiQueryForm — Multi-Query Audit Input Component (P1 #9)
  */
+const LOCATION_OPTIONS = [
+  { label: 'United States (Default)', location: 'United States', gl: 'us' },
+  { label: 'Mumbai, Maharashtra, India', location: 'Mumbai, Maharashtra, India', gl: 'in' },
+  { label: 'Delhi, India', location: 'Delhi, India', gl: 'in' },
+  { label: 'London, England, United Kingdom', location: 'London, England, United Kingdom', gl: 'uk' },
+  { label: 'Tokyo, Japan', location: 'Tokyo, Japan', gl: 'jp' },
+];
+
 export default function MultiQueryForm({ onScan, loading }) {
   const [brand, setBrand] = useState('Sony WH-1000XM5');
+  const [selectedLocation, setSelectedLocation] = useState('United States');
   const [competitor1, setCompetitor1] = useState('Bose QuietComfort Ultra');
   const [competitor2, setCompetitor2] = useState('Apple AirPods Max');
   const [competitor3, setCompetitor3] = useState('Sennheiser Momentum 4');
@@ -28,11 +37,14 @@ export default function MultiQueryForm({ onScan, loading }) {
     }
 
     const competitors = [competitor1, competitor2, competitor3].filter(c => c.trim().length > 0);
+    const locObj = LOCATION_OPTIONS.find(l => l.location === selectedLocation) || LOCATION_OPTIONS[0];
 
     onScan({
       brand: brand.trim(),
       competitors,
-      queries: queryList
+      queries: queryList,
+      location: locObj.location,
+      gl: locObj.gl,
     });
   };
 
@@ -81,9 +93,32 @@ export default function MultiQueryForm({ onScan, loading }) {
               className="form-input"
               value={brand}
               onChange={(e) => setBrand(e.target.value)}
-              placeholder="e.g. Sony WH-1000XM5"
               required
             />
+          </div>
+        </div>
+
+        {/* Target Location */}
+        <div className="form-group">
+          <label className="form-label" htmlFor="multi-location-select">
+            Target Location & Market (P2 #12)
+            <span className="form-label__sub">SerpApi location & gl parameter</span>
+          </label>
+          <div className="input-with-icon">
+            <span className="material-symbols-outlined input-icon">location_on</span>
+            <select
+              id="multi-location-select"
+              className="form-input"
+              style={{ appearance: 'auto', cursor: 'pointer' }}
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+            >
+              {LOCATION_OPTIONS.map(opt => (
+                <option key={opt.location} value={opt.location}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

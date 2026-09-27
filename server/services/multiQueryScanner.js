@@ -17,9 +17,10 @@ const { detect } = require('./detector');
  * @param {string} brandName - Target brand name
  * @param {string[]} competitors - Array of competitor names
  * @param {string[]} queries - Array of search queries (2-10 items)
+ * @param {object} options - Location and country options ({ location, gl })
  * @returns {Promise<object>} Aggregate visibility scores and per-query breakdown
  */
-async function runMultiQueryScan(brandName, competitors = [], queries = []) {
+async function runMultiQueryScan(brandName, competitors = [], queries = [], options = {}) {
   if (!queries || queries.length === 0) {
     throw new Error('At least 2 queries are required for multi-query scan.');
   }
@@ -37,11 +38,11 @@ async function runMultiQueryScan(brandName, competitors = [], queries = []) {
   const competitorVisibilityCounts = cleanCompetitors.map(name => ({ name, count: 0 }));
 
   for (const query of cleanQueries) {
-    console.log(`[multi-scan] Running query: "${query}"`);
+    console.log(`[multi-scan] Running query: "${query}" (location: ${options.location || 'default'})`);
     
     // Fetch data for query (cache layer prevents redundant external API calls)
-    const aiOverviewData = await fetchAIOverview(query);
-    const aiModeData = await fetchAIMode(query);
+    const aiOverviewData = await fetchAIOverview(query, options);
+    const aiModeData = await fetchAIMode(query, options);
 
     // Detect for brand
     const brandDetection = detect(cleanBrand, aiOverviewData, aiModeData);

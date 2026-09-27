@@ -40,8 +40,10 @@ function loadDemoFixture(type) {
 /**
  * Generate a deterministic cache key from query params.
  */
-function cacheKey(engine, query) {
-  const hash = crypto.createHash('md5').update(`${engine}:${query}`).digest('hex');
+function cacheKey(engine, query, extraParams = {}) {
+  const locStr = extraParams.location || '';
+  const glStr = extraParams.gl || '';
+  const hash = crypto.createHash('md5').update(`${engine}:${query}:${locStr}:${glStr}`).digest('hex');
   return path.join(CACHE_DIR, `${engine}_${hash}.json`);
 }
 
@@ -80,11 +82,11 @@ function writeCache(filePath, data) {
  * Generic SerpApi fetch with cache-first strategy.
  * @param {string} engine - SerpApi engine name (e.g. 'google_ai_overview', 'google_ai_mode')
  * @param {string} query - The search query
- * @param {object} extraParams - Additional API parameters
+ * @param {object} extraParams - Additional API parameters (location, gl, etc.)
  * @returns {object} Parsed API response
  */
 async function fetchFromSerpApi(engine, query, extraParams = {}) {
-  const cacheFile = cacheKey(engine, query);
+  const cacheFile = cacheKey(engine, query, extraParams);
   
   // 1. Check cache first
   const cached = readCache(cacheFile);
@@ -93,23 +95,24 @@ async function fetchFromSerpApi(engine, query, extraParams = {}) {
   // 2. Build request URL
   const apiKey = process.env.SERPAPI_KEY;
   if (!apiKey || apiKey === 'your_serpapi_key_here') {
-    // In demo mode this should never be reached (caught at higher level),
-    // but guard anyway
     throw new Error(
       'SERPAPI_KEY not set. Copy .env.example to .env and add your key.\n' +
       'Get a free key at https://serpapi.com/'
     );
   }
 
-  const params = new URLSearchParams({
+  const queryParams = {
     engine,
     q: query,
     api_key: apiKey,
-    ...extraParams,
-  });
+  };
 
+  if (extraParams.location) queryParams.location = extraParams.location;
+  if (extraParams.gl) queryParams.gl = extraParams.gl;
+
+  const params = new URLSearchParams(queryParams);
   const url = `${SERPAPI_BASE}?${params.toString()}`;
-  console.log(`  [serpapi] Fetching ${engine} for "${query}"...`);
+  console.log(`  [serpapi] Fetching ${engine} for "${query}" (location: ${extraParams.location || 'default'})...`);
 
   // 3. Make the API call
   const response = await fetch(url);
@@ -134,20 +137,25 @@ async function fetchFromSerpApi(engine, query, extraParams = {}) {
  * SerpApi returns a page_token instead. We then make a follow-up request
  * to the google_ai_overview engine with that token (it expires in ~60s).
  */
-async function fetchAIOverview(query) {
+async function fetchAIOverview(query, options = {}) {
   // Demo mode: return fixture data
   if (isDemoMode()) {
-    console.log('  [demo] Using demo fixture for AI Overview');
+    console.log(`  [demo] Using demo fixture for AI Overview (location: ${options.location || 'United States'})`);
     return loadDemoFixture('ai_overview');
   }
 
-  const result = await fetchFromSerpApi('google', query, {});
+  const extraParams = {};
+  if (options.location) extraParams.location = options.location;
+  if (options.gl) extraParams.gl = options.gl;
+
+  const result = await fetchFromSerpApi('google', query, extraParams);
 
   // Handle deferred AI Overview — page_token means content wasn't inline
   if (result.ai_overview && result.ai_overview.page_token && !result.ai_overview.text_blocks) {
     console.log(`  [serpapi] AI Overview deferred — fetching via page_token...`);
     const fullOverview = await fetchFromSerpApi('google_ai_overview', query, {
       page_token: result.ai_overview.page_token,
+      ...extraParams
     });
     // Merge the full overview back into the result
     result.ai_overview = { ...result.ai_overview, ...fullOverview };
@@ -160,14 +168,18 @@ async function fetchAIOverview(query) {
  * Fetch Google AI Mode results for a query.
  * Uses engine: google_ai_mode.
  */
-async function fetchAIMode(query) {
+async function fetchAIMode(query, options = {}) {
   // Demo mode: return fixture data
   if (isDemoMode()) {
-    console.log('  [demo] Using demo fixture for AI Mode');
+    console.log(`  [demo] Using demo fixture for AI Mode (location: ${options.location || 'United States'})`);
     return loadDemoFixture('ai_mode');
   }
 
-  return fetchFromSerpApi('google_ai_mode', query, {});
+  const extraParams = {};
+  if (options.location) extraParams.location = options.location;
+  if (options.gl) extraParams.gl = options.gl;
+
+  return fetchFromSerpApi('google_ai_mode', query, extraParams);
 }
 
 /**
@@ -177,19 +189,23 @@ async function fetchAIMode(query) {
  * (same API call, engine: 'google'), so we can reuse that cached response.
  *
  * @param {string} query - The search query
+ * @param {object} options - Optional location and country params
  * @returns {Promise<object[]>} Array of organic result objects
  */
-async function fetchOrganicResults(query) {
+async function fetchOrganicResults(query, options = {}) {
   if (isDemoMode()) {
     const fixture = loadDemoFixture('ai_overview');
     return fixture.organic_results || [];
   }
 
-  // The AI Overview fetch already uses engine:'google' which includes organic_results
-  // This will hit cache if already fetched during the same scan
-  const result = await fetchFromSerpApi('google', query, {});
+  const extraParams = {};
+  if (options.location) extraParams.location = options.location;
+  if (options.gl) extraParams.gl = options.gl;
+
+  const result = await fetchFromSerpApi('google', query, extraParams);
   return result.organic_results || [];
 }
+
 
 module.exports = {
   fetchAIOverview,

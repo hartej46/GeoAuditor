@@ -47,7 +47,7 @@
 ## P2 Progress (items 11–13)
 
 - [x] **P2 #11** — Exportable report (PDF & Markdown)
-- [ ] **P2 #12** — Multi-location comparison
+- [x] **P2 #12** — Multi-location comparison (location & gl params)
 - [ ] **P2 #13** — Dashboard UI with charts
 
 ---

@@ -25,6 +25,9 @@ export default function VisibilityScoreCard({ data }) {
           <h2 className="results-header__title">Multi-Query Visibility Score</h2>
           <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
             Overall AI synthesis presence score across {totalQueries} monitored target search queries.
+            <span className="you-pill" style={{ marginLeft: '10px', backgroundColor: 'var(--secondary-container)', color: 'var(--on-surface)' }}>
+              📍 {data.location || 'United States'}
+            </span>
           </p>
         </div>
         <ExportToolbar data={data} type="multi" />

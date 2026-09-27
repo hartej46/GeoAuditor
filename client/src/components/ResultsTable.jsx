@@ -38,6 +38,9 @@ export default function ResultsTable({ data }) {
           <h2 className="results-header__title">Competitor Visibility Matrix</h2>
           <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
             Evaluation of generative search answers for target query: <strong style={{ color: 'var(--on-surface)' }}>“{data.query}”</strong>
+            <span className="you-pill" style={{ marginLeft: '10px', backgroundColor: 'var(--secondary-container)', color: 'var(--on-surface)' }}>
+              📍 {data.location || 'United States'}
+            </span>
           </p>
         </div>
         <ExportToolbar data={data} type="single" />

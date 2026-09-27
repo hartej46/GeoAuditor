@@ -21,7 +21,7 @@ const Scan = require('../models/Scan');
  */
 async function runScan(req, res) {
   try {
-    const { brand, competitors, query } = req.body;
+    const { brand, competitors, query, location, gl } = req.body;
 
     // --- Validation ---
     if (!brand || typeof brand !== 'string' || !brand.trim()) {
@@ -37,15 +37,19 @@ async function runScan(req, res) {
       .map(c => (typeof c === 'string' ? c.trim() : ''))
       .filter(c => c.length > 0)
       .slice(0, 3);
+    const locationOptions = {
+      location: location || 'United States',
+      gl: gl || 'us'
+    };
 
-    console.log(`\n[scan] Brand: "${cleanBrand}" | Query: "${cleanQuery}" | Competitors: [${cleanCompetitors.join(', ')}]`);
+    console.log(`\n[scan] Brand: "${cleanBrand}" | Query: "${cleanQuery}" | Location: "${locationOptions.location}" | Competitors: [${cleanCompetitors.join(', ')}]`);
 
     // --- Fetch SerpApi data ---
     console.log('[scan] Fetching AI Overview...');
-    const aiOverviewData = await fetchAIOverview(cleanQuery);
+    const aiOverviewData = await fetchAIOverview(cleanQuery, locationOptions);
 
     console.log('[scan] Fetching AI Mode...');
-    const aiModeData = await fetchAIMode(cleanQuery);
+    const aiModeData = await fetchAIMode(cleanQuery, locationOptions);
 
     // --- Run detection ---
     console.log('[scan] Running brand detection...');
@@ -58,7 +62,7 @@ async function runScan(req, res) {
 
     // --- Gap Analysis (P1 #7 + #8) ---
     console.log('[scan] Running gap analysis...');
-    const organicResults = await fetchOrganicResults(cleanQuery);
+    const organicResults = await fetchOrganicResults(cleanQuery, locationOptions);
     const gapResult = analyzeGap(
       cleanBrand,
       organicResults,
@@ -92,6 +96,8 @@ async function runScan(req, res) {
     const response = {
       scanId,
       query: cleanQuery,
+      location: locationOptions.location,
+      gl: locationOptions.gl,
       timestamp: new Date().toISOString(),
       demoMode: isDemoMode(),
       dataAvailability: {
@@ -167,7 +173,7 @@ async function getScan(req, res) {
  */
 async function runMultiScan(req, res) {
   try {
-    const { brand, competitors, queries } = req.body;
+    const { brand, competitors, queries, location, gl } = req.body;
 
     if (!brand || typeof brand !== 'string' || !brand.trim()) {
       return res.status(400).json({ error: 'Brand name is required.' });
@@ -176,12 +182,19 @@ async function runMultiScan(req, res) {
       return res.status(400).json({ error: 'At least 2 queries are required for multi-query scan.' });
     }
 
+    const locationOptions = {
+      location: location || 'United States',
+      gl: gl || 'us'
+    };
+
     const { runMultiQueryScan } = require('../services/multiQueryScanner');
-    const result = await runMultiQueryScan(brand, competitors || [], queries);
+    const result = await runMultiQueryScan(brand, competitors || [], queries, locationOptions);
     const scanId = crypto.randomUUID();
 
     const response = {
       scanId,
+      location: locationOptions.location,
+      gl: locationOptions.gl,
       timestamp: new Date().toISOString(),
       demoMode: isDemoMode(),
       brand: brand.trim(),
