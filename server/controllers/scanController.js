@@ -10,8 +10,9 @@
  * Keeps routes thin — all logic lives here.
  */
 
-const { fetchAIOverview, fetchAIMode, isDemoMode } = require('../services/serpapi');
+const { fetchAIOverview, fetchAIMode, fetchOrganicResults, isDemoMode } = require('../services/serpapi');
 const { detect } = require('../services/detector');
+const { analyzeGap } = require('../services/gapAnalyzer');
 const Scan = require('../models/Scan');
 
 /**
@@ -54,6 +55,16 @@ async function runScan(req, res) {
       ...detect(comp, aiOverviewData, aiModeData),
     }));
 
+    // --- Gap Analysis (P1 #7 + #8) ---
+    console.log('[scan] Running gap analysis...');
+    const organicResults = await fetchOrganicResults(cleanQuery);
+    const gapResult = analyzeGap(
+      cleanBrand,
+      organicResults,
+      aiOverviewData?.ai_overview?.reference_links || [],
+      brandResult
+    );
+
     // --- Persist to DB (non-blocking — don't fail the scan if DB is down) ---
     let scanId = null;
     try {
@@ -91,6 +102,8 @@ async function runScan(req, res) {
         ...brandResult,
       },
       competitors: competitorResults,
+      gapAnalysis: gapResult.gapAnalysis,
+      recommendations: gapResult.recommendations,
     };
 
     console.log(`[scan] Done. Brand in AI Overview: ${brandResult.aiOverview.found} | AI Mode: ${brandResult.aiMode.found}`);

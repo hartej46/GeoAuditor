@@ -170,8 +170,31 @@ async function fetchAIMode(query) {
   return fetchFromSerpApi('google_ai_mode', query, {});
 }
 
+/**
+ * Extract organic results from a Google search response.
+ * In demo mode, returns fixture data.
+ * In live mode, the organic_results are already present in the AI Overview response
+ * (same API call, engine: 'google'), so we can reuse that cached response.
+ *
+ * @param {string} query - The search query
+ * @returns {Promise<object[]>} Array of organic result objects
+ */
+async function fetchOrganicResults(query) {
+  if (isDemoMode()) {
+    const fixture = loadDemoFixture('ai_overview');
+    return fixture.organic_results || [];
+  }
+
+  // The AI Overview fetch already uses engine:'google' which includes organic_results
+  // This will hit cache if already fetched during the same scan
+  const result = await fetchFromSerpApi('google', query, {});
+  return result.organic_results || [];
+}
+
 module.exports = {
   fetchAIOverview,
   fetchAIMode,
+  fetchOrganicResults,
   isDemoMode,
 };
+
