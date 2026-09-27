@@ -82,7 +82,7 @@ function isComparisonContent(text) {
  * @param {object} brandDetectionResult - Brand detection result from detector service
  * @returns {object} { gapAnalysis, recommendations }
  */
-function analyzeGap(brandName, organicResults = [], citedSources = [], brandDetectionResult = {}) {
+function analyzeGap(brandName, organicResults = [], citedSources = [], brandDetectionResult = {}, competitors = []) {
   const brandLower = brandName.toLowerCase();
   const brandWords = brandLower.split(/\s+/).filter(w => w.length > 2);
 
@@ -95,10 +95,37 @@ function analyzeGap(brandName, organicResults = [], citedSources = [], brandDete
     // Check if domain matches brand words or title/snippet mentions brand
     const domainMatch = brandWords.some(w => domain.includes(w));
     const titleMatch = brandWords.every(w => titleLower.includes(w));
-    return domainMatch || titleMatch;
+    const snippetMatch = brandWords.length > 1 && brandWords.every(w => snippetLower.includes(w));
+    return domainMatch || titleMatch || snippetMatch;
   });
 
-  const bestRank = brandOrganicPages.length > 0 ? brandOrganicPages[0].position : null;
+  const bestRank = brandOrganicPages.length > 0 ? (brandOrganicPages[0].position || 1) : null;
+
+  // 1b. Competitor Organic Presence Analysis (Real rankings from Google SERP)
+  const competitorOrganicPresence = (competitors || []).map(compName => {
+    const compLower = compName.toLowerCase();
+    const compWords = compLower.split(/\s+/).filter(w => w.length > 2);
+    const pages = organicResults.filter(res => {
+      const domain = extractDomain(res.link);
+      const titleLower = (res.title || '').toLowerCase();
+      const snippetLower = (res.snippet || '').toLowerCase();
+      const domainMatch = compWords.some(w => domain.includes(w));
+      const titleMatch = compWords.every(w => titleLower.includes(w));
+      const snippetMatch = compWords.length > 1 && compWords.every(w => snippetLower.includes(w));
+      return domainMatch || titleMatch || snippetMatch;
+    });
+    const compRank = pages.length > 0 ? (pages[0].position || 1) : null;
+    return {
+      name: compName,
+      found: pages.length > 0,
+      bestRank: compRank,
+      pages: pages.map(p => ({
+        position: p.position,
+        title: p.title,
+        link: p.link,
+      }))
+    };
+  });
 
   // 2. Cited Sources Analysis
   const citedAnalyzed = citedSources.map(src => ({
@@ -292,6 +319,7 @@ function analyzeGap(brandName, organicResults = [], citedSources = [], brandDete
         brandPagesNotCited,
         citedNotBrand
       },
+      competitorOrganicPresence,
       structuralGaps
     },
     recommendations

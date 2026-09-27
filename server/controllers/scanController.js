@@ -63,11 +63,16 @@ async function runScan(req, res) {
     // --- Gap Analysis (P1 #7 + #8) ---
     console.log('[scan] Running gap analysis...');
     const organicResults = await fetchOrganicResults(cleanQuery, locationOptions);
+    const citedSources = aiOverviewData?.ai_overview?.references ||
+                         aiOverviewData?.ai_overview?.reference_links ||
+                         aiModeData?.references ||
+                         [];
     const gapResult = analyzeGap(
       cleanBrand,
       organicResults,
-      aiOverviewData?.ai_overview?.reference_links || [],
-      brandResult
+      citedSources,
+      brandResult,
+      cleanCompetitors
     );
 
     // --- Persist to DB (non-blocking — don't fail the scan if DB is down) ---

@@ -16,9 +16,9 @@ export default function GeoComparisonChart({ results }) {
   const brandName = typeof results.brand === 'string' ? results.brand : (results.brand?.name || 'Your Brand');
   const competitors = results.competitors || [];
 
-  // Calculate 4 pillar scores for brand and competitors
+  // Helper: calculate organic SERP strength based on actual Google position
   const getRankScore = (rank) => {
-    if (!rank) return 0;
+    if (!rank || rank > 10) return 0;
     if (rank === 1) return 100;
     if (rank === 2) return 90;
     if (rank === 3) return 80;
@@ -27,12 +27,35 @@ export default function GeoComparisonChart({ results }) {
     return 0;
   };
 
+  // Helper: calculate real Content & Citation Authority from Google citations
+  const totalCitedSources = results.gapAnalysis?.citedSourceAnalysis?.totalCited || 0;
+  const getAuthorityScore = (entity) => {
+    if (!entity) return 0;
+    const inSources = !!(entity.aiOverview?.inSources || entity.aiMode?.inSources);
+    const matchedCount = (entity.aiOverview?.matchedSources?.length || 0) + (entity.aiMode?.matchedSources?.length || 0);
+    const isSynthesized = !!(entity.aiOverview?.found || entity.aiMode?.found);
+
+    if (inSources) {
+      if (totalCitedSources > 0) {
+        const citationRatio = Math.min(1, matchedCount / totalCitedSources);
+        return Math.min(100, Math.round(50 + citationRatio * 50));
+      }
+      return 60;
+    }
+    if (isSynthesized) {
+      // Entity cited in AI answer synthesis but without direct external source URLs
+      return 35;
+    }
+    return 0;
+  };
+
   let entities = [];
 
   if (isMulti) {
-    const brandScore = results.summary?.brandScore ?? 0;
+    const brandScore = results.summary?.brandScore ?? results.overallScore?.brand ?? 0;
     const compScores = results.overallScore?.competitors || [];
 
+    // Calculate real multi-query presence percentages
     entities.push({
       name: brandName,
       type: 'brand',
@@ -40,8 +63,8 @@ export default function GeoComparisonChart({ results }) {
       scores: {
         aiOverview: brandScore,
         aiMode: brandScore,
-        organicRank: Math.min(100, Math.round(brandScore * 0.95)),
-        authority: Math.min(100, Math.round(brandScore * 1.05))
+        organicRank: brandScore,
+        authority: brandScore
       }
     });
 
@@ -52,10 +75,10 @@ export default function GeoComparisonChart({ results }) {
         type: 'competitor',
         color: palette[i % palette.length],
         scores: {
-          aiOverview: c.score,
-          aiMode: c.score,
-          organicRank: Math.min(100, Math.round(c.score * 0.9)),
-          authority: Math.min(100, Math.round(c.score * 0.95))
+          aiOverview: c.score || 0,
+          aiMode: c.score || 0,
+          organicRank: c.score || 0,
+          authority: c.score || 0
         }
       });
     });
@@ -72,13 +95,18 @@ export default function GeoComparisonChart({ results }) {
         aiOverview: brandObj.aiOverview?.found ? 100 : 0,
         aiMode: brandObj.aiMode?.found ? 100 : 0,
         organicRank: brandOrganicScore,
-        authority: brandObj.aiOverview?.foundInSources ? 90 : (brandObj.aiOverview?.found ? 70 : 30)
+        authority: getAuthorityScore(brandObj)
       }
     });
 
     const palette = ['#5c6b73', '#8d99ae', '#d4a373'];
     competitors.forEach((c, i) => {
-      const cFound = c.aiOverview?.found || c.aiMode?.found;
+      // Retrieve real competitor organic presence from Gap Analysis (if available)
+      const compOrganic = results.gapAnalysis?.competitorOrganicPresence?.find(
+        p => p.name?.toLowerCase() === c.name?.toLowerCase()
+      );
+      const compRank = compOrganic?.bestRank || null;
+
       entities.push({
         name: c.name,
         type: 'competitor',
@@ -86,8 +114,8 @@ export default function GeoComparisonChart({ results }) {
         scores: {
           aiOverview: c.aiOverview?.found ? 100 : 0,
           aiMode: c.aiMode?.found ? 100 : 0,
-          organicRank: cFound ? 75 : 0,
-          authority: c.aiOverview?.foundInSources ? 95 : (cFound ? 70 : 25)
+          organicRank: getRankScore(compRank),
+          authority: getAuthorityScore(c)
         }
       });
     });

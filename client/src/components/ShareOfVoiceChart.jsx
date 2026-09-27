@@ -40,7 +40,19 @@ export default function ShareOfVoiceChart({ results }) {
     });
   } else {
     const brandObj = results.brand || {};
-    const brandCount = (brandObj.aiOverview?.found ? 2 : 0) + (brandObj.aiMode?.found ? 2 : 0) + (brandObj.aiOverview?.snippets?.length || 0);
+    const getEntityCount = (obj) => {
+      if (!obj) return 0;
+      let count = 0;
+      if (obj.aiOverview?.found) count += 1;
+      if (obj.aiMode?.found) count += 1;
+      count += (obj.aiOverview?.snippets?.length || 0);
+      count += (obj.aiMode?.snippets?.length || 0);
+      count += (obj.aiOverview?.matchedSources?.length || 0);
+      count += (obj.aiMode?.matchedSources?.length || 0);
+      return count;
+    };
+
+    const brandCount = getEntityCount(brandObj);
 
     entities.push({
       name: brandName,
@@ -52,7 +64,7 @@ export default function ShareOfVoiceChart({ results }) {
 
     const palette = ['#5c6b73', '#8d99ae', '#d4a373'];
     competitors.forEach((c, i) => {
-      const cCount = (c.aiOverview?.found ? 2 : 0) + (c.aiMode?.found ? 2 : 0) + (c.aiOverview?.snippets?.length || 0);
+      const cCount = getEntityCount(c);
       entities.push({
         name: c.name,
         type: 'competitor',
@@ -65,9 +77,9 @@ export default function ShareOfVoiceChart({ results }) {
 
   const totalScore = entities.reduce((acc, curr) => acc + curr.score, 0);
 
-  // Compute percentage shares
+  // Compute percentage shares accurately without fake fallback distribution
   const slices = entities.map(e => {
-    const percent = totalScore > 0 ? Math.round((e.score / totalScore) * 100) : Math.round(100 / entities.length);
+    const percent = totalScore > 0 ? Math.round((e.score / totalScore) * 100) : 0;
     return { ...e, percent };
   });
 
