@@ -7,7 +7,7 @@ import ExportToolbar from './ExportToolbar';
 export default function VisibilityScoreCard({ data }) {
   if (!data || !data.summary) return null;
 
-  const { brandScore, totalQueries, brandVisibleIn, bestCompetitor, bestCompetitorScore } = data.summary;
+  const { brandScore, totalQueries, brandVisibleIn, bestCompetitor } = data.summary;
   const brandName = data.brand;
   const competitorScores = data.overallScore?.competitors || [];
 
@@ -33,7 +33,7 @@ export default function VisibilityScoreCard({ data }) {
       <div className="score-hero-grid">
         {/* Main Brand Score Card */}
         <div className="score-main-box">
-          <div className="score-badge-label">Target Brand GEO Score</div>
+          <div className="score-badge-label">{brandName ? `${brandName} GEO Score` : 'Target Brand GEO Score'}</div>
           <div className="score-number-display" style={{ color: getScoreColor(brandScore) }}>
             {brandScore}%
           </div>

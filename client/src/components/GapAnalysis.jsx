@@ -5,7 +5,7 @@ import React from 'react';
  *
  * Displays structural gap analysis explaining why brand is missing from AI Overview.
  */
-export default function GapAnalysis({ gapAnalysis, brandName, brandFound }) {
+export default function GapAnalysis({ gapAnalysis, brandName, brandFound: _brandFound }) {
   if (!gapAnalysis) return null;
 
   const { brandOrganicPresence, citedSourceAnalysis, structuralGaps } = gapAnalysis;

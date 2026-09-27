@@ -31,7 +31,26 @@ export default function AuditHistory({ onLoadAudit, onReRunAudit }) {
   };
 
   useEffect(() => {
-    fetchHistory();
+    let ignore = false;
+    fetch('/api/scans?limit=25')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (!ignore) {
+          setHistory(data);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        if (!ignore) {
+          console.error('[AuditHistory] Fetch error:', err.message);
+          setError('Failed to load audit history.');
+          setLoading(false);
+        }
+      });
+    return () => { ignore = true; };
   }, []);
 
   const totalAudits = history.length;
@@ -62,12 +81,23 @@ export default function AuditHistory({ onLoadAudit, onReRunAudit }) {
   return (
     <section className="audit-history-section" id="audit-history-section">
       {/* Header */}
-      <div className="results-header">
-        <div className="results-header__eyebrow">P1 · Historical Tracking</div>
-        <h2 className="results-header__title">Audit History & Visibility Drift</h2>
-        <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
-          Historical record of Generative Engine Optimization scans and visibility performance metrics over time.
-        </p>
+      <div className="results-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <div className="results-header__eyebrow">P1 · Historical Tracking</div>
+          <h2 className="results-header__title">Audit History & Visibility Drift</h2>
+          <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
+            Historical record of Generative Engine Optimization scans and visibility performance metrics over time.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="chip-btn"
+          onClick={fetchHistory}
+          disabled={loading}
+        >
+          <span className="material-symbols-outlined text-[14px]" style={{ marginRight: '4px' }}>refresh</span>
+          {loading ? 'Refreshing...' : 'Refresh History'}
+        </button>
       </div>
 
       {/* High Level Metrics & Trend Line */}

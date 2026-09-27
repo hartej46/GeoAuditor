@@ -73,6 +73,6 @@ export function useScan() {
     setError(null);
   }, []);
 
-  return { results, loading, error, runScan, runMultiScan, clearResults };
+  return { results, setResults, loading, error, runScan, runMultiScan, clearResults };
 }
 
