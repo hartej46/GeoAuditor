@@ -45,13 +45,15 @@
 | Feature | Status | Notes |
 |---------|--------|-------|
 | P0 #1–6 | ✅ Complete | All core features working |
-| P1 #7 Gap Analysis | 🔄 In progress | Gemini executing P1_IMPLEMENTATION_PLAN.md |
-| P1 #8 Recommendations | 🔄 In progress | Gemini executing P1_IMPLEMENTATION_PLAN.md |
-| P1 #9 Multi-Query Score | 📋 Planned | Plan ready: P1_9_MULTI_QUERY_PLAN.md |
-| P1 #10 Trend View | ⏸️ Stretch | Only if #7–9 solid with time to spare |
-| P2 #11–13 | ⏸️ Not started | Only after all P1 done |
-| README | ✅ Written | Needs final update after P1 |
-| Demo Script | ✅ Written | DEMO_VIDEO_SCRIPT.md |
+| P1 #7 Gap Analysis | ✅ Complete | "Why you're missing" structural analysis vs AI cited sources |
+| P1 #8 Recommendations | ✅ Complete | Prioritized actionable SEO fixes with impact/effort badges |
+| P1 #9 Multi-Query Score | ✅ Complete | Aggregate % visibility scoring across 2–10 queries |
+| P1 #10 Trend View | ✅ Complete | Audit history log, dual-persistence, sparkline trend line |
+| P2 #11 Exportable Report | ✅ Complete | Print/Save PDF styling & downloadable Markdown report |
+| P2 #12 Multi-Location | 📋 Planned | Optional stretch: SerpApi location parameter comparison |
+| P2 #13 Visual Charts | 📋 Planned | Optional stretch: Radar/bar distribution chart |
+| README | ✅ Written | Complete docs with SerpApi endpoints & architecture |
+| Demo Script | ✅ Written | DEMO_VIDEO_SCRIPT.md ready for recording |
 
 ---
 
