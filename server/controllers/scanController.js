@@ -10,6 +10,7 @@
  * Keeps routes thin — all logic lives here.
  */
 
+const crypto = require('crypto');
 const { fetchAIOverview, fetchAIMode, fetchOrganicResults, isDemoMode } = require('../services/serpapi');
 const { detect } = require('../services/detector');
 const { analyzeGap } = require('../services/gapAnalyzer');
@@ -66,7 +67,7 @@ async function runScan(req, res) {
     );
 
     // --- Persist to DB (non-blocking — don't fail the scan if DB is down) ---
-    let scanId = null;
+    let scanId = crypto.randomUUID();
     try {
       const savedScan = await Scan.create({
         brand: cleanBrand,
@@ -75,7 +76,7 @@ async function runScan(req, res) {
         brandResult,
         competitorResults,
       });
-      if (savedScan) {
+      if (savedScan && savedScan.id) {
         scanId = savedScan.id;
         console.log(`[scan] Saved to DB with id: ${scanId}`);
       }
@@ -88,7 +89,6 @@ async function runScan(req, res) {
     const aiModeAvailable = !!(aiModeData && (aiModeData.text_blocks || aiModeData.reconstructed_markdown));
 
     // --- Assemble response ---
-    const scanId = crypto.randomUUID();
     const response = {
       scanId,
       query: cleanQuery,
