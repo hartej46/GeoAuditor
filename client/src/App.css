@@ -796,3 +796,214 @@ body {
 .app-footer a:hover {
   text-decoration: underline;
 }
+
+/* --- P1 Gap Analysis & Recommendations Styles --- */
+.gaps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.gap-card {
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--outline-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.gap-card--high {
+  border-left: 4px solid var(--danger-text);
+}
+
+.gap-card--medium {
+  border-left: 4px solid var(--primary);
+}
+
+.gap-card--low {
+  border-left: 4px solid var(--outline);
+}
+
+.gap-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.severity-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.severity-badge--high {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.severity-badge--medium {
+  background-color: var(--primary-fixed);
+  color: var(--on-primary-fixed);
+}
+
+.severity-badge--low {
+  background-color: var(--surface-container);
+  color: var(--on-surface-variant);
+}
+
+.gap-card__title {
+  font-family: var(--font-headline);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.gap-card__explanation {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
+.cited-sources-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cited-source-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.cited-source-domain {
+  font-family: monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  background-color: var(--surface-container);
+  border-radius: var(--radius-sm);
+  color: var(--on-surface-variant);
+}
+
+.cited-source-link {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.cited-source-link:hover {
+  text-decoration: underline;
+}
+
+/* Recommendations Grid */
+.recommendations-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.recommendation-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--outline-subtle);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.rec-priority-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary-fixed);
+  color: var(--on-primary-fixed);
+  font-family: var(--font-headline);
+  font-size: 20px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.rec-content {
+  flex: 1;
+}
+
+.rec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.rec-action {
+  font-family: var(--font-headline);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--on-surface);
+  margin: 0;
+}
+
+.rec-tags {
+  display: flex;
+  gap: 8px;
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.tag--impact-high {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+}
+
+.tag--impact-medium {
+  background-color: var(--primary-fixed);
+  color: var(--on-primary-fixed);
+}
+
+.tag--impact-low {
+  background-color: var(--surface-container);
+  color: var(--on-surface-variant);
+}
+
+.tag--effort-high {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.tag--effort-medium {
+  background-color: var(--surface-container);
+  color: var(--on-surface-variant);
+}
+
+.tag--effort-low {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+}
+
+.rec-detail {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+

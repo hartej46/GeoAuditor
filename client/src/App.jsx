@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import ScanForm from './components/ScanForm';
 import ResultsTable from './components/ResultsTable';
+import GapAnalysis from './components/GapAnalysis';
+import Recommendations from './components/Recommendations';
 import { useScan } from './hooks/useScan';
 import './App.css';
 
@@ -123,6 +125,18 @@ export default function App() {
 
         {/* Results Presentation */}
         {results && <ResultsTable data={results} />}
+
+        {results?.gapAnalysis && (
+          <GapAnalysis
+            gapAnalysis={results.gapAnalysis}
+            brandName={results.brand?.name}
+            brandFound={results.brand?.aiOverview?.found || results.brand?.aiMode?.found}
+          />
+        )}
+
+        {results?.recommendations && results.recommendations.length > 0 && (
+          <Recommendations recommendations={results.recommendations} />
+        )}
       </main>
 
       {/* Footer */}
