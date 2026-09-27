@@ -1,0 +1,24 @@
+# Dependencies & Build
+node_modules/
+dist/
+
+# Environment secrets
+.env
+
+# Local API response cache (dev only)
+server/cache/*.json
+!server/cache/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# MCP / Tool cache
+.stitch-mcp/
