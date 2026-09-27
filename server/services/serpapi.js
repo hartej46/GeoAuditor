@@ -43,7 +43,8 @@ function loadDemoFixture(type) {
 function cacheKey(engine, query, extraParams = {}) {
   const locStr = extraParams.location || '';
   const glStr = extraParams.gl || '';
-  const hash = crypto.createHash('md5').update(`${engine}:${query}:${locStr}:${glStr}`).digest('hex');
+  const tokenStr = extraParams.page_token || '';
+  const hash = crypto.createHash('md5').update(`${engine}:${query}:${locStr}:${glStr}:${tokenStr}`).digest('hex');
   return path.join(CACHE_DIR, `${engine}_${hash}.json`);
 }
 
@@ -82,7 +83,7 @@ function writeCache(filePath, data) {
  * Generic SerpApi fetch with cache-first strategy.
  * @param {string} engine - SerpApi engine name (e.g. 'google_ai_overview', 'google_ai_mode')
  * @param {string} query - The search query
- * @param {object} extraParams - Additional API parameters (location, gl, etc.)
+ * @param {object} extraParams - Additional API parameters (location, gl, page_token, etc.)
  * @returns {object} Parsed API response
  */
 async function fetchFromSerpApi(engine, query, extraParams = {}) {
@@ -103,12 +104,19 @@ async function fetchFromSerpApi(engine, query, extraParams = {}) {
 
   const queryParams = {
     engine,
-    q: query,
     api_key: apiKey,
   };
 
-  if (extraParams.location) queryParams.location = extraParams.location;
-  if (extraParams.gl) queryParams.gl = extraParams.gl;
+  if (query) {
+    queryParams.q = query;
+  }
+
+  // Include all extraParams (location, gl, page_token, etc.)
+  for (const [key, value] of Object.entries(extraParams)) {
+    if (value !== undefined && value !== null && value !== '') {
+      queryParams[key] = value;
+    }
+  }
 
   const params = new URLSearchParams(queryParams);
   const url = `${SERPAPI_BASE}?${params.toString()}`;
@@ -153,12 +161,16 @@ async function fetchAIOverview(query, options = {}) {
   // Handle deferred AI Overview — page_token means content wasn't inline
   if (result.ai_overview && result.ai_overview.page_token && !result.ai_overview.text_blocks) {
     console.log(`  [serpapi] AI Overview deferred — fetching via page_token...`);
-    const fullOverview = await fetchFromSerpApi('google_ai_overview', query, {
-      page_token: result.ai_overview.page_token,
-      ...extraParams
-    });
-    // Merge the full overview back into the result
-    result.ai_overview = { ...result.ai_overview, ...fullOverview };
+    try {
+      const fullOverview = await fetchFromSerpApi('google_ai_overview', query, {
+        page_token: result.ai_overview.page_token,
+        ...extraParams
+      });
+      // Merge the full overview back into the result
+      result.ai_overview = { ...result.ai_overview, ...fullOverview };
+    } catch (deferredErr) {
+      console.warn(`  [serpapi] Deferred AI Overview fetch failed: ${deferredErr.message}`);
+    }
   }
 
   return result;
