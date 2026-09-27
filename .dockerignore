@@ -4,5 +4,8 @@ client/dist
 .git
 .env
 .stitch-mcp
+server/cache/*.json
+!server/cache/.gitkeep
 cache/*.json
 !cache/.gitkeep
+

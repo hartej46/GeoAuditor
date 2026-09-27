@@ -7,6 +7,8 @@ import MultiQueryForm from './components/MultiQueryForm';
 import VisibilityScoreCard from './components/VisibilityScoreCard';
 import QueryBreakdownTable from './components/QueryBreakdownTable';
 import AuditHistory from './components/AuditHistory';
+import ShareOfVoiceChart from './components/ShareOfVoiceChart';
+import GeoComparisonChart from './components/GeoComparisonChart';
 import { useScan } from './hooks/useScan';
 import './App.css';
 
@@ -16,6 +18,7 @@ import './App.css';
 export default function App() {
   const { results, loading, error, runScan, setResults } = useScan();
   const [activeTab, setActiveTab] = useState('audit-scanner');
+  const [showVisualSummary, setShowVisualSummary] = useState(false);
   const [multiResults, setMultiResults] = useState(null);
   const [multiLoading, setMultiLoading] = useState(false);
   const [multiError, setMultiError] = useState(null);
@@ -186,7 +189,28 @@ export default function App() {
           <>
             <ScanForm onScan={runScan} loading={loading} />
             {error && <div className="error-notice" id="error-message">{error}</div>}
-            {results && <ResultsTable data={results} />}
+            {results && (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '16px 0 20px 0' }}>
+                  <button
+                    type="button"
+                    className="chip-btn"
+                    onClick={() => setShowVisualSummary(!showVisualSummary)}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', fontSize: '13px' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>bar_chart</span>
+                    {showVisualSummary ? 'Hide Visual Summary' : 'Show Visual Summary'}
+                  </button>
+                </div>
+                {showVisualSummary && (
+                  <div className="chart-dashboard-grid">
+                    <ShareOfVoiceChart results={results} />
+                    <GeoComparisonChart results={results} />
+                  </div>
+                )}
+                <ResultsTable data={results} />
+              </>
+            )}
             {results?.gapAnalysis && (
               <GapAnalysis
                 gapAnalysis={results.gapAnalysis}
@@ -206,7 +230,13 @@ export default function App() {
             {!results && <ScanForm onScan={runScan} loading={loading} />}
             {error && <div className="error-notice">{error}</div>}
             {results ? (
-              <ResultsTable data={results} />
+              <>
+                <div className="chart-dashboard-grid">
+                  <ShareOfVoiceChart results={results} />
+                  <GeoComparisonChart results={results} />
+                </div>
+                <ResultsTable data={results} />
+              </>
             ) : (
               <div style={{ padding: '24px', textAlign: 'center', color: 'var(--on-surface-variant)' }}>
                 Run an audit scan above to generate the side-by-side Competitor Matrix.

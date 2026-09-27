@@ -1161,12 +1161,78 @@ body {
     max-width: 100% !important;
   }
 
-  .sahara-card, .matrix-card, .metric-card, .gap-card, .recommendation-card {
+  .sahara-card, .matrix-card, .metric-card, .gap-card, .recommendation-card, .chart-card {
     box-shadow: none !important;
     border: 1px solid #ddd !important;
     page-break-inside: avoid;
   }
 }
+
+/* --- P2 #13 Visual Dashboard & Charts Styles --- */
+.chart-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 900px) {
+  .chart-dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.chart-title {
+  font-family: var(--font-headline);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--on-surface);
+  line-height: 1.2;
+}
+
+.donut-wrapper {
+  transition: all 0.3s ease;
+}
+
+.donut-legend {
+  flex: 1;
+  min-width: 160px;
+}
+
+.donut-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.donut-legend li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+.donut-legend li:hover {
+  background-color: var(--surface-container);
+}
+
+.comparison-chart-body .bars-container div > div > div {
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 
 
 
