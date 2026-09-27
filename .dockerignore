@@ -1,0 +1,8 @@
+node_modules
+client/node_modules
+client/dist
+.git
+.env
+.stitch-mcp
+cache/*.json
+!cache/.gitkeep

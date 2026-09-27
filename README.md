@@ -65,14 +65,36 @@ GEO Auditor ships with a **built-in demo mode** that works without an API key. I
 
 ## Getting Started
 
-### Prerequisites
+### 🐳 1-Step Docker Startup (Recommended for Hackathon Judges)
+
+If you have **Docker** and **Docker Compose** installed, you can spin up the complete production web app + PostgreSQL container in a single command:
+
+```bash
+# Clone and enter repo
+git clone https://github.com/hartej46/GeoAuditor.git
+cd GeoAuditor
+
+# Option A: Start instantly in Sandbox Demo Mode (No API key required!)
+docker compose up --build
+
+# Option B: Start with your SerpApi key
+SERPAPI_KEY=your_actual_api_key_here docker compose up --build
+```
+
+Then open **http://localhost:3000** in your browser!
+
+---
+
+### Standard Local Setup
+
+#### Prerequisites
 
 - **Node.js** v18+ (uses built-in `fetch`)
 - **npm** (comes with Node.js)
 - **SerpApi API key** — [Get a free key](https://serpapi.com/) (optional — demo mode works without it)
-- **PostgreSQL** (optional — app works without it, scans just won't persist)
+- **PostgreSQL** (optional — app works with automatic local JSON fallback)
 
-### Installation
+#### Installation
 
 ```bash
 # Clone the repo
@@ -92,7 +114,7 @@ cp .env.example .env
 # Edit .env and add your SERPAPI_KEY (or leave default for demo mode)
 ```
 
-### Running Locally
+#### Running Locally
 
 ```bash
 # Terminal 1: Start the backend
