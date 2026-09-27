@@ -1,0 +1,148 @@
+{
+  "_comment": "Pre-tested demo fixture for P0 #6. Simulates a SerpApi AI Overview + AI Mode response for the query 'best noise cancelling headphones 2026'. Use this to demo the full flow without needing a live API key.",
+  "demo_config": {
+    "brand": "Sony WH-1000XM5",
+    "competitors": ["Bose QuietComfort Ultra", "Apple AirPods Max", "Sennheiser Momentum 4"],
+    "query": "best noise cancelling headphones 2026"
+  },
+  "ai_overview_response": {
+    "search_metadata": {
+      "id": "demo-fixture-ai-overview",
+      "status": "Success",
+      "created_at": "2026-09-20 12:00:00 UTC"
+    },
+    "search_parameters": {
+      "engine": "google",
+      "q": "best noise cancelling headphones 2026"
+    },
+    "ai_overview": {
+      "text_blocks": [
+        {
+          "type": "paragraph",
+          "snippet": "The best noise cancelling headphones in 2026 offer impressive ANC technology with improved battery life and comfort. Here are the top picks based on expert testing:",
+          "reference_indexes": [0, 1]
+        },
+        {
+          "type": "list",
+          "list": [
+            {
+              "title": "Sony WH-1000XM5",
+              "snippet": "The Sony WH-1000XM5 remains the gold standard for noise cancellation. With its industry-leading ANC, 30-hour battery life, and multipoint connectivity, it's the best overall choice for most people. The lightweight design and improved call quality make it perfect for commuters and remote workers.",
+              "reference_indexes": [0, 2]
+            },
+            {
+              "title": "Bose QuietComfort Ultra",
+              "snippet": "The Bose QuietComfort Ultra offers the most effective noise cancellation in the market, slightly edging out Sony in pure ANC performance. The Immersive Audio feature adds spatial sound, though at a higher price point.",
+              "reference_indexes": [1, 3]
+            },
+            {
+              "title": "Apple AirPods Max (2nd Gen)",
+              "snippet": "Apple's AirPods Max 2nd generation features USB-C charging, improved active noise cancellation, and seamless integration with the Apple ecosystem. Best choice for iPhone users, though premium pricing may be a concern.",
+              "reference_indexes": [1, 4]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "snippet": "For the best value, the Sony WH-1000XM5 offers the best combination of noise cancellation, sound quality, comfort, and price. The Bose QuietComfort Ultra is worth the premium if noise cancellation is your absolute top priority.",
+          "reference_indexes": [0, 1]
+        }
+      ],
+      "reference_links": [
+        {
+          "title": "Best Noise Cancelling Headphones 2026 - RTINGS.com",
+          "link": "https://www.rtings.com/headphones/reviews/best/noise-cancelling",
+          "favicon": "https://www.rtings.com/favicon.ico"
+        },
+        {
+          "title": "The Best Wireless Headphones for 2026 | Wirecutter",
+          "link": "https://www.nytimes.com/wirecutter/reviews/best-noise-cancelling-headphones/",
+          "favicon": "https://www.nytimes.com/favicon.ico"
+        },
+        {
+          "title": "Sony WH-1000XM5 Review - SoundGuys",
+          "link": "https://www.soundguys.com/sony-wh-1000xm5-review-12345/",
+          "favicon": "https://www.soundguys.com/favicon.ico"
+        },
+        {
+          "title": "Bose QuietComfort Ultra Headphones Review",
+          "link": "https://www.tomsguide.com/reviews/bose-quietcomfort-ultra-headphones",
+          "favicon": "https://www.tomsguide.com/favicon.ico"
+        },
+        {
+          "title": "Apple AirPods Max 2 Review | TechRadar",
+          "link": "https://www.techradar.com/headphones/apple-airpods-max-2-review",
+          "favicon": "https://www.techradar.com/favicon.ico"
+        }
+      ]
+    }
+  },
+  "ai_mode_response": {
+    "search_metadata": {
+      "id": "demo-fixture-ai-mode",
+      "status": "Success",
+      "created_at": "2026-09-20 12:00:05 UTC"
+    },
+    "search_parameters": {
+      "engine": "google_ai_mode",
+      "q": "best noise cancelling headphones 2026"
+    },
+    "text_blocks": [
+      {
+        "type": "paragraph",
+        "snippet": "When it comes to the best noise cancelling headphones in 2026, several models stand out for their exceptional performance in active noise cancellation, sound quality, and overall user experience."
+      },
+      {
+        "type": "heading",
+        "snippet": "Top Picks"
+      },
+      {
+        "type": "paragraph",
+        "snippet": "The Sony WH-1000XM5 continues to dominate as the best overall noise cancelling headphone. Sony's V1 processor delivers class-leading ANC that adapts to your environment automatically. With 30 hours of battery life, LDAC codec support for high-resolution audio, and a comfortable lightweight design at just 250g, it's hard to beat at its price point."
+      },
+      {
+        "type": "paragraph",
+        "snippet": "For those who prioritize noise cancellation above all else, the Bose QuietComfort Ultra is the headphone to get. Bose's CustomTune technology calibrates the ANC to your ear shape, delivering slightly better noise isolation than the Sony in very loud environments. The Immersive Audio mode provides a convincing spatial audio experience."
+      },
+      {
+        "type": "paragraph",
+        "snippet": "Apple users should consider the AirPods Max 2nd generation, which features USB-C, improved Adaptive Audio, and deep integration with iOS. The premium build quality with the aluminum ear cups feels luxurious, though the price tag is significantly higher than competitors."
+      },
+      {
+        "type": "paragraph",
+        "snippet": "The Sennheiser Momentum 4 is an excellent choice for audiophiles who want the best sound quality. While its noise cancellation is a step below Sony and Bose, the Momentum 4 delivers richer, more detailed audio with a wider soundstage. The 60-hour battery life is also best-in-class."
+      },
+      {
+        "type": "heading",
+        "snippet": "Summary"
+      },
+      {
+        "type": "paragraph",
+        "snippet": "Overall, the Sony WH-1000XM5 offers the best balance of features for most buyers, while the Bose QuietComfort Ultra wins for pure noise cancellation. The AirPods Max 2 is ideal for Apple ecosystem users, and the Sennheiser Momentum 4 is the audiophile's choice."
+      }
+    ],
+    "references": [
+      {
+        "title": "RTINGS.com - Best Noise Cancelling Headphones",
+        "link": "https://www.rtings.com/headphones/reviews/best/noise-cancelling"
+      },
+      {
+        "title": "Wirecutter - Best Wireless Headphones",
+        "link": "https://www.nytimes.com/wirecutter/reviews/best-noise-cancelling-headphones/"
+      },
+      {
+        "title": "SoundGuys - Sony WH-1000XM5 Review",
+        "link": "https://www.soundguys.com/sony-wh-1000xm5-review-12345/"
+      },
+      {
+        "title": "Tom's Guide - Bose QuietComfort Ultra Review",
+        "link": "https://www.tomsguide.com/reviews/bose-quietcomfort-ultra-headphones"
+      },
+      {
+        "title": "What Hi-Fi - Sennheiser Momentum 4 Review",
+        "link": "https://www.whathifi.com/sennheiser/momentum-4-wireless/review"
+      }
+    ],
+    "reconstructed_markdown": "When it comes to the best noise cancelling headphones in 2026, several models stand out for their exceptional performance.\n\n## Top Picks\n\nThe **Sony WH-1000XM5** continues to dominate as the best overall noise cancelling headphone. Sony's V1 processor delivers class-leading ANC that adapts to your environment automatically. With 30 hours of battery life, LDAC codec support for high-resolution audio, and a comfortable lightweight design at just 250g, it's hard to beat at its price point.\n\nFor those who prioritize noise cancellation above all else, the **Bose QuietComfort Ultra** is the headphone to get. Bose's CustomTune technology calibrates the ANC to your ear shape, delivering slightly better noise isolation than the Sony in very loud environments.\n\nApple users should consider the **AirPods Max 2nd generation**, which features USB-C, improved Adaptive Audio, and deep integration with iOS. The premium build quality feels luxurious, though the price tag is significantly higher than competitors.\n\nThe **Sennheiser Momentum 4** is an excellent choice for audiophiles who want the best sound quality. While its noise cancellation is a step below Sony and Bose, the Momentum 4 delivers richer, more detailed audio."
+  }
+}
