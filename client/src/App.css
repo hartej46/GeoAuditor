@@ -1350,11 +1350,11 @@ body {
   display: none !important;
 }
 
-/* --- Robust Print & PDF Pagination Styles --- */
+/* --- Robust Print & PDF Pagination Styles (A4 Standard) --- */
 @media print {
   @page {
-    size: letter portrait;
-    margin: 12mm 14mm 14mm 14mm;
+    size: A4 portrait;
+    margin: 15mm 18mm 18mm 18mm;
   }
 
   *, *:before, *:after {
@@ -1372,11 +1372,11 @@ body {
     overflow: visible !important;
     background-color: #ffffff !important;
     color: #1a1a1a !important;
-    font-size: 11pt !important;
+    font-size: 10pt !important;
     line-height: 1.4 !important;
   }
 
-  /* Unravel flexbox layout to allow multi-page document pagination */
+  /* Unravel flexbox layout to allow multi-page document pagination on A4 */
   .app-shell {
     display: block !important;
     width: 100% !important;
@@ -1397,7 +1397,7 @@ body {
     overflow: visible !important;
     flex: none !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
   }
 
   /* Hide screen-only interactive controls and navigational elements */
@@ -1423,9 +1423,11 @@ body {
   }
 
   .print-executive-header {
-    border-bottom: 2px solid #c2652a !important;
+    border-bottom: 2.5px solid #c2652a !important;
     padding-bottom: 12px !important;
     margin-bottom: 20px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .print-executive-header__top {
@@ -1443,7 +1445,7 @@ body {
   }
 
   .print-executive-header__subtitle {
-    font-size: 11px !important;
+    font-size: 10.5px !important;
     font-weight: 600 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.06em !important;
@@ -1452,7 +1454,7 @@ body {
   }
 
   .print-executive-header__meta-right {
-    font-size: 9.5pt !important;
+    font-size: 9pt !important;
     color: #555555 !important;
     text-align: right !important;
     line-height: 1.45 !important;
@@ -1466,7 +1468,7 @@ body {
   }
 
   .print-meta-pill {
-    font-size: 9.5pt !important;
+    font-size: 9pt !important;
     background-color: #f7f3ed !important;
     border: 1px solid #d5cbbe !important;
     padding: 3px 10px !important;
@@ -1482,7 +1484,8 @@ body {
   .sahara-card,
   .gaps-list,
   .recommendations-grid,
-  .chart-dashboard-grid {
+  .chart-dashboard-grid,
+  .cited-sources-container {
     display: block !important;
     width: 100% !important;
     height: auto !important;
@@ -1522,15 +1525,15 @@ body {
   }
 
   .metric-card__label {
-    font-size: 9.5pt !important;
+    font-size: 9pt !important;
   }
 
   .metric-card__value {
-    font-size: 15pt !important;
+    font-size: 14pt !important;
   }
 
   .metric-card__desc {
-    font-size: 8.5pt !important;
+    font-size: 8pt !important;
   }
 
   /* Matrix table pagination */
@@ -1563,16 +1566,16 @@ body {
   .matrix-table th {
     background-color: #f2ece3 !important;
     color: #3e322a !important;
-    font-size: 9pt !important;
+    font-size: 8.5pt !important;
     font-weight: 700 !important;
-    padding: 8px 10px !important;
+    padding: 7px 10px !important;
     border-bottom: 1.5px solid #bdafa0 !important;
     text-align: left !important;
   }
 
   .matrix-table td {
-    padding: 10px 10px !important;
-    font-size: 9.5pt !important;
+    padding: 9px 10px !important;
+    font-size: 9pt !important;
     border-bottom: 1px solid #e5ded4 !important;
     vertical-align: top !important;
   }
@@ -1595,7 +1598,7 @@ body {
     border: 1px solid #d5cbbe !important;
     border-radius: 6px !important;
     background: #ffffff !important;
-    padding: 14px 16px !important;
+    padding: 13px 15px !important;
     margin-bottom: 10px !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -1604,6 +1607,42 @@ body {
   .rec-content {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+
+  /* Cited Sources Showcase on A4 */
+  .cited-sources-container {
+    padding: 16px !important;
+    background: #ffffff !important;
+    border: 1px solid #d5cbbe !important;
+    border-radius: 6px !important;
+  }
+
+  .cited-sources-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .cited-source-card {
+    box-shadow: none !important;
+    border: 1px solid #d5cbbe !important;
+    border-radius: 6px !important;
+    background: #ffffff !important;
+    padding: 10px 12px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .cited-source-card__title {
+    font-size: 8.5pt !important;
+    margin-bottom: 4px !important;
+  }
+
+  .cited-source-card__snippet {
+    font-size: 7.5pt !important;
+    padding: 6px 8px !important;
+    background: #faf7f2 !important;
+    margin-top: 6px !important;
   }
 
   /* Multi-Query styles */
@@ -1624,7 +1663,7 @@ body {
     box-shadow: none !important;
     border: 1px solid #d5cbbe !important;
     background: #ffffff !important;
-    padding: 16px !important;
+    padding: 14px !important;
     border-radius: 6px !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -1634,8 +1673,8 @@ body {
   .chart-dashboard-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 14px !important;
-    margin-bottom: 20px !important;
+    gap: 12px !important;
+    margin-bottom: 18px !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
@@ -1645,7 +1684,21 @@ body {
     border-radius: 6px !important;
     box-shadow: none !important;
     background: #ffffff !important;
-    padding: 14px !important;
+    padding: 12px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Report Footer for A4 */
+  .print-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 24px !important;
+    padding-top: 8px !important;
+    border-top: 1px solid #d5cbbe !important;
+    font-size: 7.5pt !important;
+    color: #777777 !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
