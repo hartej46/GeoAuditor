@@ -92,8 +92,8 @@ export default function GeoComparisonChart({ results }) {
       type: 'brand',
       color: 'var(--primary)',
       scores: {
-        aiOverview: brandObj.aiOverview?.found ? 100 : 0,
-        aiMode: brandObj.aiMode?.found ? 100 : 0,
+        aiOverview: brandObj.aiOverview?.found ? 100 : ((brandObj.aiOverview?.inSources || brandObj.aiOverview?.foundInSources) ? 50 : 0),
+        aiMode: brandObj.aiMode?.found ? 100 : ((brandObj.aiMode?.inSources || brandObj.aiMode?.foundInSources) ? 50 : 0),
         organicRank: brandOrganicScore,
         authority: getAuthorityScore(brandObj)
       }
@@ -112,8 +112,8 @@ export default function GeoComparisonChart({ results }) {
         type: 'competitor',
         color: palette[i % palette.length],
         scores: {
-          aiOverview: c.aiOverview?.found ? 100 : 0,
-          aiMode: c.aiMode?.found ? 100 : 0,
+          aiOverview: c.aiOverview?.found ? 100 : ((c.aiOverview?.inSources || c.aiOverview?.foundInSources) ? 50 : 0),
+          aiMode: c.aiMode?.found ? 100 : ((c.aiMode?.inSources || c.aiMode?.foundInSources) ? 50 : 0),
           organicRank: getRankScore(compRank),
           authority: getAuthorityScore(c)
         }

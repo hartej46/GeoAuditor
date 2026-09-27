@@ -104,13 +104,13 @@ export default function ResultsTable({ data }) {
                 <td>
                   <VisibilityBadge
                     found={entity.aiOverview?.found}
-                    foundInSources={entity.aiOverview?.foundInSources}
+                    foundInSources={entity.aiOverview?.foundInSources || entity.aiOverview?.inSources}
                   />
                 </td>
                 <td>
                   <VisibilityBadge
                     found={entity.aiMode?.found}
-                    foundInSources={entity.aiMode?.foundInSources}
+                    foundInSources={entity.aiMode?.foundInSources || entity.aiMode?.inSources}
                   />
                 </td>
                 <td>

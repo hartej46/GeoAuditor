@@ -51,8 +51,6 @@ function extractAIOverviewContent(aiOverview) {
       snippet: ref.snippet || '',
       source: ref.source || ''
     });
-    if (ref.snippet) textSnippets.push(ref.snippet);
-    if (ref.title) textSnippets.push(ref.title);
   }
 
   return { textSnippets, sources };
@@ -99,8 +97,6 @@ function extractAIModeContent(aiModeResponse) {
       snippet: ref.snippet || '',
       source: ref.source || ''
     });
-    if (ref.snippet) textSnippets.push(ref.snippet);
-    if (ref.title) textSnippets.push(ref.title);
   }
 
   return { textSnippets, sources };
@@ -255,8 +251,8 @@ function findMentions(brandName, rawText) {
  */
 function detect(brandName, aiOverviewData, aiModeData) {
   const result = {
-    aiOverview: { found: false, snippets: [], inSources: false, matchedSources: [] },
-    aiMode: { found: false, snippets: [], inSources: false, matchedSources: [] },
+    aiOverview: { found: false, foundInSources: false, inSources: false, snippets: [], matchedSources: [] },
+    aiMode: { found: false, foundInSources: false, inSources: false, snippets: [], matchedSources: [] },
   };
 
   const variants = getEntityVariants(brandName);
@@ -266,7 +262,7 @@ function detect(brandName, aiOverviewData, aiModeData) {
     aiOverviewData ? aiOverviewData.ai_overview : null
   );
 
-  // Search answer text
+  // Search answer text (strictly synthesized Google AI answer content)
   for (const text of overviewContent.textSnippets) {
     const mentions = findMentions(brandName, text);
     if (mentions.length > 0) {
@@ -287,13 +283,9 @@ function detect(brandName, aiOverviewData, aiModeData) {
 
     if (matchesSource) {
       result.aiOverview.inSources = true;
+      result.aiOverview.foundInSources = true;
       result.aiOverview.matchedSources.push(source.title || source.link);
     }
-  }
-
-  // If found in sources but not in text, still mark as found
-  if (result.aiOverview.inSources && !result.aiOverview.found) {
-    result.aiOverview.found = true;
   }
 
   // --- AI Mode Detection ---
@@ -320,12 +312,9 @@ function detect(brandName, aiOverviewData, aiModeData) {
 
     if (matchesSource) {
       result.aiMode.inSources = true;
+      result.aiMode.foundInSources = true;
       result.aiMode.matchedSources.push(source.title || source.link);
     }
-  }
-
-  if (result.aiMode.inSources && !result.aiMode.found) {
-    result.aiMode.found = true;
   }
 
   // Deduplicate snippets and sources
