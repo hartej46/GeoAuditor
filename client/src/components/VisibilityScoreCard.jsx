@@ -19,6 +19,27 @@ export default function VisibilityScoreCard({ data }) {
 
   return (
     <div className="visibility-score-card" style={{ marginBottom: '32px' }}>
+      {/* Executive Print-Only Header for Multi-Query PDF Exports */}
+      <div className="print-executive-header print-only">
+        <div className="print-executive-header__top">
+          <div>
+            <div className="print-executive-header__logo">⚡ GEO Auditor</div>
+            <div className="print-executive-header__subtitle">Multi-Query Generative Engine Optimization — Aggregate Benchmark Report</div>
+          </div>
+          <div className="print-executive-header__meta-right">
+            <div><strong>Audit Date:</strong> {new Date(data.timestamp || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+            <div><strong>Engine:</strong> Google AI Overview & AI Mode via SerpApi</div>
+            <div><strong>Environment:</strong> {data.demoMode ? 'Verified Sandbox Fixture' : 'Live SerpApi SERP Engine'}</div>
+          </div>
+        </div>
+        <div className="print-executive-header__details">
+          <div className="print-meta-pill"><strong>Target Brand:</strong> {brandName || 'Brand'}</div>
+          <div className="print-meta-pill"><strong>Total Monitored Queries:</strong> {totalQueries}</div>
+          <div className="print-meta-pill"><strong>Location:</strong> {data.location || 'United States'}</div>
+          <div className="print-meta-pill"><strong>Aggregate Score:</strong> {brandScore}% ({brandVisibleIn}/{totalQueries} Visible)</div>
+        </div>
+      </div>
+
       <div className="results-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <div className="results-header__eyebrow">P1 · Aggregate Benchmark</div>

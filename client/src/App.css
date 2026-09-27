@@ -1174,9 +1174,14 @@ body {
 
 /* --- Print & PDF Export Styles (P2 #11) --- */
 .export-toolbar {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
+  background: var(--surface-container-low);
+  padding: 5px 10px 5px 14px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--outline-subtle);
+  box-shadow: 0 1px 3px rgba(58, 48, 42, 0.04);
 }
 
 .export-toolbar__label {
@@ -1186,6 +1191,7 @@ body {
   font-size: 12px;
   font-weight: 600;
   color: var(--on-surface-variant);
+  user-select: none;
 }
 
 .export-toolbar__actions {
@@ -1194,34 +1200,366 @@ body {
   gap: 8px;
 }
 
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.export-btn svg {
+  flex-shrink: 0;
+}
+
+.export-btn--primary {
+  background: var(--primary);
+  color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 4px rgba(194, 101, 42, 0.22);
+}
+
+.export-btn--primary:hover {
+  background: #ad521c;
+  box-shadow: 0 3px 8px rgba(194, 101, 42, 0.32);
+  transform: translateY(-1px);
+}
+
+.export-btn--primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(194, 101, 42, 0.18);
+}
+
+.export-btn--secondary {
+  background: var(--surface-container-lowest);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-subtle);
+  box-shadow: 0 1px 2px rgba(58, 48, 42, 0.04);
+}
+
+.export-btn--secondary:hover {
+  background: var(--surface-container);
+  border-color: var(--outline);
+  color: var(--on-surface);
+  transform: translateY(-1px);
+}
+
+.export-btn--secondary:active {
+  transform: translateY(0);
+}
+
+/* Print-Only Elements (Hidden on screen) */
+.print-only {
+  display: none !important;
+}
+
+/* --- Robust Print & PDF Pagination Styles --- */
 @media print {
-  body {
-    background-color: #ffffff !important;
-    color: #000000 !important;
+  @page {
+    size: letter portrait;
+    margin: 12mm 14mm 14mm 14mm;
   }
 
+  *, *:before, *:after {
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html, body {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Unravel flexbox layout to allow multi-page document pagination */
+  .app-shell {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .main-content {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    flex: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide screen-only interactive controls and navigational elements */
   .top-nav,
   .notification-banner,
   .hero,
+  .engine-indicator,
   .no-print,
   .export-toolbar,
   #scan-form-card,
   #multi-query-card,
-  .app-footer {
+  .history-drawer,
+  .history-backdrop,
+  .app-footer,
+  .chip-btn,
+  button {
     display: none !important;
   }
 
-  .app-shell, .main-content {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
+  /* Show executive print-only header */
+  .print-only {
+    display: block !important;
   }
 
-  .sahara-card, .matrix-card, .metric-card, .gap-card, .recommendation-card, .chart-card {
+  .print-executive-header {
+    border-bottom: 2px solid #c2652a !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .print-executive-header__top {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    margin-bottom: 10px !important;
+  }
+
+  .print-executive-header__logo {
+    font-family: var(--font-headline) !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: #1a1a1a !important;
+  }
+
+  .print-executive-header__subtitle {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    color: #c2652a !important;
+    margin-top: 2px !important;
+  }
+
+  .print-executive-header__meta-right {
+    font-size: 9.5pt !important;
+    color: #555555 !important;
+    text-align: right !important;
+    line-height: 1.45 !important;
+  }
+
+  .print-executive-header__details {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
+  }
+
+  .print-meta-pill {
+    font-size: 9.5pt !important;
+    background-color: #f7f3ed !important;
+    border: 1px solid #d5cbbe !important;
+    padding: 3px 10px !important;
+    border-radius: 4px !important;
+    color: #222222 !important;
+  }
+
+  /* Container sections: unconstrain heights & overflow for continuous pagination */
+  .results-section,
+  .gap-analysis-section,
+  .recommendations-section,
+  .matrix-card,
+  .sahara-card,
+  .gaps-list,
+  .recommendations-grid,
+  .chart-dashboard-grid {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    margin-top: 18px !important;
+  }
+
+  .results-header,
+  .results-header__title,
+  h2, h3 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Metric cards row */
+  .metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .metric-card {
     box-shadow: none !important;
-    border: 1px solid #ddd !important;
-    page-break-inside: avoid;
+    border: 1px solid #d5cbbe !important;
+    border-radius: 6px !important;
+    background: #faf7f2 !important;
+    padding: 12px 14px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .metric-card__label {
+    font-size: 9.5pt !important;
+  }
+
+  .metric-card__value {
+    font-size: 15pt !important;
+  }
+
+  .metric-card__desc {
+    font-size: 8.5pt !important;
+  }
+
+  /* Matrix table pagination */
+  .matrix-card {
+    border: 1px solid #d5cbbe !important;
+    border-radius: 6px !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    margin-bottom: 20px !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .matrix-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .matrix-table thead {
+    display: table-header-group !important;
+  }
+
+  .matrix-table tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .matrix-table th {
+    background-color: #f2ece3 !important;
+    color: #3e322a !important;
+    font-size: 9pt !important;
+    font-weight: 700 !important;
+    padding: 8px 10px !important;
+    border-bottom: 1.5px solid #bdafa0 !important;
+    text-align: left !important;
+  }
+
+  .matrix-table td {
+    padding: 10px 10px !important;
+    font-size: 9.5pt !important;
+    border-bottom: 1px solid #e5ded4 !important;
+    vertical-align: top !important;
+  }
+
+  .matrix-table tr.brand-row {
+    background-color: #faf5ee !important;
+  }
+
+  /* Gap Analysis & Recommendations Cards */
+  .gaps-list,
+  .recommendations-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .gap-card,
+  .recommendation-card {
+    box-shadow: none !important;
+    border: 1px solid #d5cbbe !important;
+    border-radius: 6px !important;
+    background: #ffffff !important;
+    padding: 14px 16px !important;
+    margin-bottom: 10px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .rec-content {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Multi-Query styles */
+  .visibility-score-card {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 20px !important;
+  }
+
+  .score-hero-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+  }
+
+  .score-main-box,
+  .score-competitors-box {
+    box-shadow: none !important;
+    border: 1px solid #d5cbbe !important;
+    background: #ffffff !important;
+    padding: 16px !important;
+    border-radius: 6px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Dashboard Charts in Print */
+  .chart-dashboard-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+    margin-bottom: 20px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .chart-card {
+    border: 1px solid #d5cbbe !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    padding: 14px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }
 

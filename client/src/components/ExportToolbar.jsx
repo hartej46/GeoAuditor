@@ -102,25 +102,41 @@ ${recommendations.length > 0
   return (
     <div className="export-toolbar no-print">
       <div className="export-toolbar__label">
-        <span className="material-symbols-outlined text-[16px]">file_download</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0, color: 'var(--primary)' }}>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
         <span>Export Audit Report</span>
       </div>
       <div className="export-toolbar__actions">
         <button
           type="button"
-          className="chip-btn chip-btn--active"
+          className="export-btn export-btn--primary"
           onClick={handlePrint}
+          title="Print or Save complete audit report as PDF"
         >
-          <span className="material-symbols-outlined text-[14px]" style={{ marginRight: '4px' }}>print</span>
-          Print / Save PDF
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}>
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+          <span>Print / Save PDF</span>
         </button>
         <button
           type="button"
-          className="chip-btn"
+          className="export-btn export-btn--secondary"
           onClick={handleDownloadMarkdown}
+          title="Download report in Markdown format"
         >
-          <span className="material-symbols-outlined text-[14px]" style={{ marginRight: '4px' }}>download</span>
-          Download Markdown (.md)
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>Download Markdown (.md)</span>
         </button>
       </div>
     </div>

@@ -225,7 +225,7 @@ export default function App() {
             {error && <div className="error-notice" id="error-message">{error}</div>}
             {results && (
               <>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '16px 0 20px 0' }}>
+                <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', margin: '16px 0 20px 0' }}>
                   <button
                     type="button"
                     className="chip-btn"
