@@ -6,14 +6,15 @@ import Recommendations from './components/Recommendations';
 import MultiQueryForm from './components/MultiQueryForm';
 import VisibilityScoreCard from './components/VisibilityScoreCard';
 import QueryBreakdownTable from './components/QueryBreakdownTable';
+import AuditHistory from './components/AuditHistory';
 import { useScan } from './hooks/useScan';
 import './App.css';
 
 /**
- * App — Root Application with Stitch Sahara Warm Minimalism Shell
+ * App — Root Application with Stitch Sahara Warm Minimalism Shell & Navigation Tabs
  */
 export default function App() {
-  const { results, loading, error, runScan, runMultiScan } = useScan();
+  const { results, loading, error, runScan, setResults } = useScan();
   const [activeTab, setActiveTab] = useState('audit-scanner');
   const [multiResults, setMultiResults] = useState(null);
   const [multiLoading, setMultiLoading] = useState(false);
@@ -35,6 +36,48 @@ export default function App() {
       setMultiError(err.message);
     } finally {
       setMultiLoading(false);
+    }
+  };
+
+  const handleLoadAudit = async (item) => {
+    let payload = item.fullData;
+    if (!payload && item.id) {
+      try {
+        const res = await fetch(`/api/scans/${item.id}`);
+        if (res.ok) payload = await res.json();
+      } catch (err) {
+        console.error('[App] Failed to load scan payload:', err.message);
+      }
+    }
+    if (payload) {
+      if (item.type === 'multi' || payload.perQuery) {
+        setMultiResults(payload);
+        setActiveTab('multi-query-score');
+      } else {
+        setResults(payload);
+        setActiveTab('audit-scanner');
+      }
+    }
+  };
+
+  const handleReRunAudit = (item) => {
+    if (item.type === 'multi') {
+      setActiveTab('multi-query-score');
+      const queries = item.fullData?.perQuery?.map(q => q.query) || ['best noise cancelling headphones 2026', 'best headphones for travel'];
+      const competitors = item.fullData?.competitors || ['Bose QuietComfort Ultra', 'Apple AirPods Max'];
+      handleMultiScan({
+        brand: item.brand,
+        competitors,
+        queries
+      });
+    } else {
+      setActiveTab('audit-scanner');
+      const competitors = item.fullData?.competitors?.map(c => c.name) || ['Bose QuietComfort Ultra', 'Apple AirPods Max'];
+      runScan({
+        brand: item.brand,
+        competitors,
+        query: item.query
+      });
     }
   };
 
@@ -138,7 +181,66 @@ export default function App() {
           </p>
         </section>
 
-        {activeTab === 'multi-query-score' ? (
+        {/* Tab 1: Audit Scanner */}
+        {activeTab === 'audit-scanner' && (
+          <>
+            <ScanForm onScan={runScan} loading={loading} />
+            {error && <div className="error-notice" id="error-message">{error}</div>}
+            {results && <ResultsTable data={results} />}
+            {results?.gapAnalysis && (
+              <GapAnalysis
+                gapAnalysis={results.gapAnalysis}
+                brandName={results.brand?.name}
+                brandFound={results.brand?.aiOverview?.found || results.brand?.aiMode?.found}
+              />
+            )}
+            {results?.recommendations && results.recommendations.length > 0 && (
+              <Recommendations recommendations={results.recommendations} />
+            )}
+          </>
+        )}
+
+        {/* Tab 2: Competitor Matrix */}
+        {activeTab === 'competitor-matrix' && (
+          <>
+            {!results && <ScanForm onScan={runScan} loading={loading} />}
+            {error && <div className="error-notice">{error}</div>}
+            {results ? (
+              <ResultsTable data={results} />
+            ) : (
+              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--on-surface-variant)' }}>
+                Run an audit scan above to generate the side-by-side Competitor Matrix.
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Tab 3: Gap Analysis */}
+        {activeTab === 'gap-analysis' && (
+          <>
+            {!results && <ScanForm onScan={runScan} loading={loading} />}
+            {error && <div className="error-notice">{error}</div>}
+            {results ? (
+              <>
+                <GapAnalysis
+                  gapAnalysis={results.gapAnalysis}
+                  brandName={results.brand?.name}
+                  brandFound={results.brand?.aiOverview?.found || results.brand?.aiMode?.found}
+                />
+                {results?.recommendations && (
+                  <Recommendations recommendations={results.recommendations} />
+                )}
+              </>
+            ) : (
+              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--on-surface-variant)' }}>
+                Run an audit scan above to perform the Structural Gap Analysis.
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Tab 4: Multi-Query Score */}
+        {activeTab === 'multi-query-score' && (
           <>
             <MultiQueryForm onScan={handleMultiScan} loading={multiLoading} />
             {multiError && <div className="error-notice" style={{ marginTop: '20px' }}>{multiError}</div>}
@@ -149,30 +251,14 @@ export default function App() {
               </>
             )}
           </>
-        ) : (
-          <>
-            <ScanForm onScan={runScan} loading={loading} />
+        )}
 
-            {error && (
-              <div className="error-notice" id="error-message">
-                {error}
-              </div>
-            )}
-
-            {results && <ResultsTable data={results} />}
-
-            {results?.gapAnalysis && (
-              <GapAnalysis
-                gapAnalysis={results.gapAnalysis}
-                brandName={results.brand?.name}
-                brandFound={results.brand?.aiOverview?.found || results.brand?.aiMode?.found}
-              />
-            )}
-
-            {results?.recommendations && results.recommendations.length > 0 && (
-              <Recommendations recommendations={results.recommendations} />
-            )}
-          </>
+        {/* Tab 5: Audit History */}
+        {activeTab === 'audit-history' && (
+          <AuditHistory
+            onLoadAudit={handleLoadAudit}
+            onReRunAudit={handleReRunAudit}
+          />
         )}
       </main>
 
