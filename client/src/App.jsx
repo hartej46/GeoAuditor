@@ -3,6 +3,9 @@ import ScanForm from './components/ScanForm';
 import ResultsTable from './components/ResultsTable';
 import GapAnalysis from './components/GapAnalysis';
 import Recommendations from './components/Recommendations';
+import MultiQueryForm from './components/MultiQueryForm';
+import VisibilityScoreCard from './components/VisibilityScoreCard';
+import QueryBreakdownTable from './components/QueryBreakdownTable';
 import { useScan } from './hooks/useScan';
 import './App.css';
 
@@ -10,8 +13,30 @@ import './App.css';
  * App — Root Application with Stitch Sahara Warm Minimalism Shell
  */
 export default function App() {
-  const { results, loading, error, runScan } = useScan();
+  const { results, loading, error, runScan, runMultiScan } = useScan();
   const [activeTab, setActiveTab] = useState('audit-scanner');
+  const [multiResults, setMultiResults] = useState(null);
+  const [multiLoading, setMultiLoading] = useState(false);
+  const [multiError, setMultiError] = useState(null);
+
+  const handleMultiScan = async (params) => {
+    setMultiLoading(true);
+    setMultiError(null);
+    try {
+      const response = await fetch('/api/scan/multi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Multi scan failed');
+      setMultiResults(data);
+    } catch (err) {
+      setMultiError(err.message);
+    } finally {
+      setMultiLoading(false);
+    }
+  };
 
   return (
     <div className="app-shell">
@@ -113,29 +138,41 @@ export default function App() {
           </p>
         </section>
 
-        {/* Scan Parameters Card */}
-        <ScanForm onScan={runScan} loading={loading} />
+        {activeTab === 'multi-query-score' ? (
+          <>
+            <MultiQueryForm onScan={handleMultiScan} loading={multiLoading} />
+            {multiError && <div className="error-notice" style={{ marginTop: '20px' }}>{multiError}</div>}
+            {multiResults && (
+              <>
+                <VisibilityScoreCard data={multiResults} />
+                <QueryBreakdownTable data={multiResults} />
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <ScanForm onScan={runScan} loading={loading} />
 
-        {/* Error Notification */}
-        {error && (
-          <div className="error-notice" id="error-message">
-            {error}
-          </div>
-        )}
+            {error && (
+              <div className="error-notice" id="error-message">
+                {error}
+              </div>
+            )}
 
-        {/* Results Presentation */}
-        {results && <ResultsTable data={results} />}
+            {results && <ResultsTable data={results} />}
 
-        {results?.gapAnalysis && (
-          <GapAnalysis
-            gapAnalysis={results.gapAnalysis}
-            brandName={results.brand?.name}
-            brandFound={results.brand?.aiOverview?.found || results.brand?.aiMode?.found}
-          />
-        )}
+            {results?.gapAnalysis && (
+              <GapAnalysis
+                gapAnalysis={results.gapAnalysis}
+                brandName={results.brand?.name}
+                brandFound={results.brand?.aiOverview?.found || results.brand?.aiMode?.found}
+              />
+            )}
 
-        {results?.recommendations && results.recommendations.length > 0 && (
-          <Recommendations recommendations={results.recommendations} />
+            {results?.recommendations && results.recommendations.length > 0 && (
+              <Recommendations recommendations={results.recommendations} />
+            )}
+          </>
         )}
       </main>
 

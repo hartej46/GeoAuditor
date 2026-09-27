@@ -42,10 +42,37 @@ export function useScan() {
     }
   }, []);
 
+  const runMultiScan = useCallback(async ({ brand, competitors, queries }) => {
+    setLoading(true);
+    setError(null);
+    setResults(null);
+
+    try {
+      const response = await fetch('/api/scan/multi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brand, competitors, queries }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Server returned ${response.status}`);
+      }
+
+      setResults(data);
+    } catch (err) {
+      setError(err.message || 'Multi-query scan failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const clearResults = useCallback(() => {
     setResults(null);
     setError(null);
   }, []);
 
-  return { results, loading, error, runScan, clearResults };
+  return { results, loading, error, runScan, runMultiScan, clearResults };
 }
+
