@@ -1,4 +1,5 @@
 import React from 'react';
+import ExportToolbar from './ExportToolbar';
 
 /**
  * VisibilityScoreCard — Large Prominent Score Gauge & Competitor Scores (P1 #9)
@@ -18,12 +19,15 @@ export default function VisibilityScoreCard({ data }) {
 
   return (
     <div className="visibility-score-card" style={{ marginBottom: '32px' }}>
-      <div className="results-header">
-        <div className="results-header__eyebrow">P1 · Aggregate Benchmark</div>
-        <h2 className="results-header__title">Multi-Query Visibility Score</h2>
-        <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
-          Overall AI synthesis presence score across {totalQueries} monitored target search queries.
-        </p>
+      <div className="results-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <div className="results-header__eyebrow">P1 · Aggregate Benchmark</div>
+          <h2 className="results-header__title">Multi-Query Visibility Score</h2>
+          <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
+            Overall AI synthesis presence score across {totalQueries} monitored target search queries.
+          </p>
+        </div>
+        <ExportToolbar data={data} type="multi" />
       </div>
 
       <div className="score-hero-grid">

@@ -1,6 +1,7 @@
 import DataNotice from './DataNotice';
 import VisibilityBadge from './VisibilityBadge';
 import SnippetCard from './SnippetCard';
+import ExportToolbar from './ExportToolbar';
 
 /**
  * ResultsTable — Sahara Warm Minimalism Results Component
@@ -10,6 +11,7 @@ import SnippetCard from './SnippetCard';
  *  - Competitor comparison matrix table
  *  - Matching snippet cards with entity highlights
  *  - Data availability indicators
+ *  - Export toolbar for Print/PDF and Markdown
  */
 export default function ResultsTable({ data }) {
   const brand = data.brand;
@@ -29,13 +31,16 @@ export default function ResultsTable({ data }) {
 
   return (
     <section className="results-section" id="results-section">
-      {/* Header */}
-      <div className="results-header">
-        <div className="results-header__eyebrow">Entity Landscape · SERP Target #1</div>
-        <h2 className="results-header__title">Competitor Visibility Matrix</h2>
-        <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
-          Evaluation of generative search answers for target query: <strong style={{ color: 'var(--on-surface)' }}>“{data.query}”</strong>
-        </p>
+      {/* Header with Export Toolbar */}
+      <div className="results-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <div className="results-header__eyebrow">Entity Landscape · SERP Target #1</div>
+          <h2 className="results-header__title">Competitor Visibility Matrix</h2>
+          <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
+            Evaluation of generative search answers for target query: <strong style={{ color: 'var(--on-surface)' }}>“{data.query}”</strong>
+          </p>
+        </div>
+        <ExportToolbar data={data} type="single" />
       </div>
 
       {/* Metrics Row */}

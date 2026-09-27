@@ -1115,4 +1115,58 @@ body {
   text-align: right;
 }
 
+/* --- Print & PDF Export Styles (P2 #11) --- */
+.export-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.export-toolbar__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+
+.export-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .top-nav,
+  .notification-banner,
+  .hero,
+  .no-print,
+  .export-toolbar,
+  #scan-form-card,
+  #multi-query-card,
+  .app-footer {
+    display: none !important;
+  }
+
+  .app-shell, .main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .sahara-card, .matrix-card, .metric-card, .gap-card, .recommendation-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+}
+
+
 
