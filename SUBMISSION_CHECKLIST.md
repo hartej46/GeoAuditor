@@ -50,9 +50,9 @@
 | P1 #9 Multi-Query Score | ✅ Complete | Aggregate % visibility scoring across 2–10 queries |
 | P1 #10 Trend View | ✅ Complete | Audit history log, dual-persistence, sparkline trend line |
 | P2 #11 Exportable Report | ✅ Complete | Print/Save PDF styling & downloadable Markdown report |
-| P2 #12 Multi-Location | 📋 Planned | Optional stretch: SerpApi location parameter comparison |
-| P2 #13 Visual Charts | 📋 Planned | Optional stretch: Radar/bar distribution chart |
-| README | ✅ Written | Complete docs with SerpApi endpoints & architecture |
+| P2 #12 Multi-Location | ✅ Complete | Location & gl parameters support (US, Mumbai, London) |
+| P2 #13 Visual Charts | ✅ Complete | Share of Voice donut & 4-pillar GEO comparison bar charts |
+| README | ✅ Written | Complete docs with SerpApi endpoints & Docker guide |
 | Demo Script | ✅ Written | DEMO_VIDEO_SCRIPT.md ready for recording |
 
 ---
