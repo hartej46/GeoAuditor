@@ -39,8 +39,8 @@
 
 ## P1 Progress (items 7–10) — *Implementation plan: `P1_IMPLEMENTATION_PLAN.md`*
 
-- [ ] **P1 #7** — "Why you're missing" gap analysis ⬅️ NEXT
-- [ ] **P1 #8** — Actionable recommendations ⬅️ NEXT
+- [x] **P1 #7** — "Why you're missing" gap analysis
+- [x] **P1 #8** — Actionable recommendations
 - [ ] **P1 #9** — Multi-query visibility score
 - [ ] **P1 #10** — Historical/trend view
 
