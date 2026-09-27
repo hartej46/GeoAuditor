@@ -7,7 +7,10 @@
 
 const express = require('express');
 const router = express.Router();
-const { runScan, getScan, runMultiScan } = require('../controllers/scanController');
+const { runScan, getScans, getScan, runMultiScan } = require('../controllers/scanController');
+
+// GET /api/scans — Retrieve audit history summaries
+router.get('/', getScans);
 
 // POST /api/scan — Run a new single query visibility scan
 router.post('/', runScan);
@@ -19,4 +22,5 @@ router.post('/multi', runMultiScan);
 router.get('/:id', getScan);
 
 module.exports = router;
+
 

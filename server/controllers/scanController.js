@@ -88,6 +88,7 @@ async function runScan(req, res) {
     const aiModeAvailable = !!(aiModeData && (aiModeData.text_blocks || aiModeData.reconstructed_markdown));
 
     // --- Assemble response ---
+    const scanId = crypto.randomUUID();
     const response = {
       scanId,
       query: cleanQuery,
@@ -106,6 +107,14 @@ async function runScan(req, res) {
       recommendations: gapResult.recommendations,
     };
 
+    // --- Dual Persistence ---
+    try {
+      await Scan.saveRecord(response);
+      console.log(`[scan] Saved scan record: ${scanId}`);
+    } catch (saveErr) {
+      console.warn(`[scan] Save record warning: ${saveErr.message}`);
+    }
+
     console.log(`[scan] Done. Brand in AI Overview: ${brandResult.aiOverview.found} | AI Mode: ${brandResult.aiMode.found}`);
     res.json(response);
 
@@ -117,6 +126,20 @@ async function runScan(req, res) {
     }
 
     res.status(500).json({ error: 'Scan failed. Check server logs for details.' });
+  }
+}
+
+/**
+ * GET /api/scans — Retrieve recent audit summaries.
+ */
+async function getScans(req, res) {
+  try {
+    const limit = parseInt(req.query.limit, 10) || 20;
+    const scans = await Scan.list(limit);
+    res.json(scans);
+  } catch (err) {
+    console.error('[scan] getScans error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve audit history.' });
   }
 }
 
@@ -155,19 +178,32 @@ async function runMultiScan(req, res) {
 
     const { runMultiQueryScan } = require('../services/multiQueryScanner');
     const result = await runMultiQueryScan(brand, competitors || [], queries);
+    const scanId = crypto.randomUUID();
 
-    res.json({
+    const response = {
+      scanId,
       timestamp: new Date().toISOString(),
       demoMode: isDemoMode(),
       brand: brand.trim(),
       competitors: (competitors || []).map(c => c.trim()).filter(Boolean),
       ...result
-    });
+    };
+
+    // --- Dual Persistence ---
+    try {
+      await Scan.saveRecord(response);
+      console.log(`[scan] Saved multi-query scan record: ${scanId}`);
+    } catch (saveErr) {
+      console.warn(`[scan] Save multi-query record warning: ${saveErr.message}`);
+    }
+
+    res.json(response);
   } catch (err) {
     console.error('[scan] runMultiScan error:', err.message);
     res.status(500).json({ error: err.message || 'Multi-query scan failed.' });
   }
 }
 
-module.exports = { runScan, getScan, runMultiScan };
+module.exports = { runScan, getScans, getScan, runMultiScan };
+
 
