@@ -75,7 +75,73 @@
           "favicon": "https://www.techradar.com/favicon.ico"
         }
       ]
-    }
+    },
+    "organic_results": [
+      {
+        "position": 1,
+        "title": "Best Noise Cancelling Headphones 2026 - RTINGS.com",
+        "link": "https://www.rtings.com/headphones/reviews/best/noise-cancelling",
+        "snippet": "We've tested over 200 headphones to find the best noise cancelling options for every budget and use case.",
+        "displayed_link": "rtings.com > headphones > reviews",
+        "source": "RTINGS.com"
+      },
+      {
+        "position": 2,
+        "title": "The Best Wireless Noise-Cancelling Headphones for 2026 | Wirecutter",
+        "link": "https://www.nytimes.com/wirecutter/reviews/best-noise-cancelling-headphones/",
+        "snippet": "After 100+ hours of testing top ANC headphones, we think the Sony WH-1000XM5 and Bose QC Ultra are the top choices.",
+        "displayed_link": "nytimes.com > wirecutter > reviews",
+        "source": "Wirecutter"
+      },
+      {
+        "position": 3,
+        "title": "Sony WH-1000XM5 Review: Industry Gold Standard - SoundGuys",
+        "link": "https://www.soundguys.com/sony-wh-1000xm5-review-12345/",
+        "snippet": "Detailed test results for ANC, sound quality, frequency response, battery performance and microphone clarity.",
+        "displayed_link": "soundguys.com > reviews > sony-wh-1000xm5",
+        "source": "SoundGuys"
+      },
+      {
+        "position": 4,
+        "title": "Bose QuietComfort Ultra Headphones Review - Tom's Guide",
+        "link": "https://www.tomsguide.com/reviews/bose-quietcomfort-ultra-headphones",
+        "snippet": "The Bose QC Ultra sets a new benchmark for ANC performance with Immersive Audio mode and customizable EQ.",
+        "displayed_link": "tomsguide.com > reviews",
+        "source": "Tom's Guide"
+      },
+      {
+        "position": 5,
+        "title": "Apple AirPods Max 2 Review - TechRadar",
+        "link": "https://www.techradar.com/headphones/apple-airpods-max-2-review",
+        "snippet": "Apple updates its flagship ANC headphones with USB-C and lossless audio support over USB.",
+        "displayed_link": "techradar.com > reviews",
+        "source": "TechRadar"
+      },
+      {
+        "position": 6,
+        "title": "Sony WH-1000XM5 Wireless Headphones Official Product Page",
+        "link": "https://www.sony.com/electronics/headband-headphones/wh-1000xm5",
+        "snippet": "Experience industry leading noise canceling with two processors, 8 microphones, and crystal clear call quality.",
+        "displayed_link": "sony.com > electronics > headband-headphones",
+        "source": "Sony"
+      },
+      {
+        "position": 7,
+        "title": "Sennheiser Momentum 4 Wireless Review - What Hi-Fi?",
+        "link": "https://www.whathifi.com/sennheiser/momentum-4-wireless/review",
+        "snippet": "Incredible 60-hour battery life meets energetic audiophile sound performance.",
+        "displayed_link": "whathifi.com > sennheiser > review",
+        "source": "What Hi-Fi?"
+      },
+      {
+        "position": 8,
+        "title": "Bose Official Site | QuietComfort Ultra Headphones",
+        "link": "https://www.bose.com/p/headphones/bose-quietcomfort-ultra-headphones/QCU-HEADPHONEARN.html",
+        "snippet": "World-class noise cancellation, breakthrough spatialized audio, and elevated design for listening.",
+        "displayed_link": "bose.com > headphones",
+        "source": "Bose"
+      }
+    ]
   },
   "ai_mode_response": {
     "search_metadata": {
