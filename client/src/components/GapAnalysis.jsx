@@ -11,12 +11,12 @@ export default function GapAnalysis({ gapAnalysis, brandName, brandFound: _brand
   const { brandOrganicPresence, citedSourceAnalysis, structuralGaps } = gapAnalysis;
 
   return (
-    <section className="gap-analysis-section" id="gap-analysis-section" style={{ marginTop: '40px' }}>
+    <section className="gap-analysis-section" id="gap-analysis-section">
       {/* Header */}
       <div className="results-header">
         <div className="results-header__eyebrow">P1 · Structural Analysis</div>
         <h2 className="results-header__title">Why You're Missing</h2>
-        <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
+        <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '6px', lineHeight: '1.5' }}>
           Comparative structural gap analysis of <strong style={{ color: 'var(--on-surface)' }}>{brandName}</strong> organic presence vs. cited AI Overview sources.
         </p>
       </div>
@@ -36,12 +36,14 @@ export default function GapAnalysis({ gapAnalysis, brandName, brandFound: _brand
         </div>
 
         <div className="metric-card">
-          <div className="metric-card__label">AI Cited Outlets</div>
-          <div className="metric-card__value" style={{ color: 'var(--on-surface)' }}>
-            {citedSourceAnalysis?.totalCited || 0} Sources
+          <div className="metric-card__label">Brand Citations in AI</div>
+          <div className="metric-card__value" style={{ color: (gapAnalysis.overlap?.brandPagesCited?.length || 0) > 0 ? 'var(--primary)' : 'var(--danger-text)' }}>
+            {(gapAnalysis.overlap?.brandPagesCited?.length || 0) > 0
+              ? `${gapAnalysis.overlap.brandPagesCited.length} Cited Sources`
+              : '0 sources cite your brand'}
           </div>
           <div className="metric-card__desc">
-            Primary reference links synthesized by Google AI
+            {citedSourceAnalysis?.totalCited || 0} external media sources cited in AI answer
           </div>
         </div>
 

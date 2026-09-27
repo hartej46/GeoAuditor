@@ -9,12 +9,12 @@ export default function Recommendations({ recommendations }) {
   if (!recommendations || recommendations.length === 0) return null;
 
   return (
-    <section className="recommendations-section" id="recommendations-section" style={{ marginTop: '40px' }}>
+    <section className="recommendations-section" id="recommendations-section">
       {/* Header */}
       <div className="results-header">
         <div className="results-header__eyebrow">P1 · Action Plan</div>
         <h2 className="results-header__title">Actionable GEO Recommendations</h2>
-        <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '4px' }}>
+        <p style={{ color: 'var(--on-surface-variant)', fontSize: '14px', marginTop: '6px', lineHeight: '1.5' }}>
           Prioritized strategy to optimize content structure, authority, and organic search presence for AI Overview inclusion.
         </p>
       </div>

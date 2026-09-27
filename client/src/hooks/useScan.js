@@ -16,7 +16,7 @@ export function useScan() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const runScan = useCallback(async ({ brand, competitors, query }) => {
+  const runScan = useCallback(async ({ brand, competitors, query, location, gl }) => {
     setLoading(true);
     setError(null);
     setResults(null);
@@ -25,7 +25,7 @@ export function useScan() {
       const response = await fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brand, competitors, query }),
+        body: JSON.stringify({ brand, competitors, query, location, gl }),
       });
 
       const data = await response.json();
@@ -42,7 +42,7 @@ export function useScan() {
     }
   }, []);
 
-  const runMultiScan = useCallback(async ({ brand, competitors, queries }) => {
+  const runMultiScan = useCallback(async ({ brand, competitors, queries, location, gl }) => {
     setLoading(true);
     setError(null);
     setResults(null);
@@ -51,7 +51,7 @@ export function useScan() {
       const response = await fetch('/api/scan/multi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brand, competitors, queries }),
+        body: JSON.stringify({ brand, competitors, queries, location, gl }),
       });
 
       const data = await response.json();

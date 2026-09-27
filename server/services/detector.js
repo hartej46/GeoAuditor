@@ -101,15 +101,43 @@ function extractAIModeContent(aiModeResponse) {
 }
 
 /**
+ * Clean UI artifacts, unescape markdown, and strip trailing bare URLs from snippet text.
+ * @param {string} text
+ * @returns {string}
+ */
+function cleanRawText(text) {
+  if (!text) return '';
+  return text
+    // 1. Strip Google UI chrome / accessibility strings
+    .replace(/Go to product viewer dialog for this item\.?/gi, '')
+    .replace(/Go to product viewer\.?/gi, '')
+    .replace(/View product details\.?/gi, '')
+    .replace(/Product viewer dialog\.?/gi, '')
+    // 2. Unescape escaped markdown punctuation \( "Immersive Audio" \)
+    .replace(/\\([()[\]"'*_{}])/g, '$1')
+    // 3. Remove raw citation bracket markers e.g. [5], [1, 2]
+    .replace(/\[\d+(?:,\s*\d+)*\]/g, '')
+    // 4. Remove bare google search / redirect URLs or trailing markdown URLs
+    .replace(/\(https?:\/\/[^\s)]+\)/g, '')
+    .replace(/https?:\/\/[^\s)]+/g, '')
+    // 5. Clean up multiple spaces, broken parens
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\(\s*\)/g, '')
+    .trim();
+}
+
+/**
  * Find all occurrences of a brand name in a text, returning surrounding context.
  * Case-insensitive. Returns up to CONTEXT_CHARS characters around each match.
+ * Snaps to clean word boundaries and avoids broken URL fragments.
  * @param {string} brandName
- * @param {string} text
+ * @param {string} rawText
  * @returns {string[]} Array of snippet strings showing the match in context
  */
-function findMentions(brandName, text) {
-  const CONTEXT_CHARS = 80;
+function findMentions(brandName, rawText) {
+  const CONTEXT_CHARS = 90;
   const mentions = [];
+  const text = cleanRawText(rawText);
   const lowerText = text.toLowerCase();
   const lowerBrand = brandName.toLowerCase();
   let startFrom = 0;
@@ -118,15 +146,39 @@ function findMentions(brandName, text) {
     const idx = lowerText.indexOf(lowerBrand, startFrom);
     if (idx === -1) break;
 
-    const snippetStart = Math.max(0, idx - CONTEXT_CHARS);
-    const snippetEnd = Math.min(text.length, idx + brandName.length + CONTEXT_CHARS);
+    let snippetStart = Math.max(0, idx - CONTEXT_CHARS);
+    // Snap to word boundary if not at start
+    if (snippetStart > 0) {
+      const spaceIdx = text.indexOf(' ', snippetStart);
+      if (spaceIdx !== -1 && spaceIdx < idx) {
+        snippetStart = spaceIdx + 1;
+      }
+    }
+
+    let snippetEnd = Math.min(text.length, idx + brandName.length + CONTEXT_CHARS);
+    // Snap to word boundary if not at end
+    if (snippetEnd < text.length) {
+      const spaceIdx = text.lastIndexOf(' ', snippetEnd);
+      if (spaceIdx !== -1 && spaceIdx > idx + brandName.length) {
+        snippetEnd = spaceIdx;
+      }
+    }
+
     let snippet = text.slice(snippetStart, snippetEnd).trim();
 
-    // Add ellipsis for truncated context
-    if (snippetStart > 0) snippet = '…' + snippet;
-    if (snippetEnd < text.length) snippet = snippet + '…';
+    // Strip unclosed parenthesis or trailing broken URL at end
+    snippet = snippet.replace(/\(https?:\/\/[^)]*$/i, '').replace(/https?:\/\/[^\s]*$/i, '').trim();
 
-    mentions.push(snippet);
+    // Remove any trailing open punctuation
+    snippet = snippet.replace(/[\s(,;:-]+$/, '');
+
+    // Add ellipsis for truncated context
+    if (snippetStart > 0 && !snippet.startsWith('…')) snippet = '…' + snippet;
+    if (snippetEnd < text.length && !snippet.endsWith('…') && !snippet.endsWith('.')) snippet = snippet + '…';
+
+    if (snippet.length > brandName.length + 5) {
+      mentions.push(snippet);
+    }
     startFrom = idx + brandName.length;
   }
 
@@ -214,4 +266,10 @@ function detect(brandName, aiOverviewData, aiModeData) {
   return result;
 }
 
-module.exports = { detect };
+module.exports = {
+  detect,
+  cleanRawText,
+  findMentions,
+  extractAIOverviewContent,
+  extractAIModeContent,
+};

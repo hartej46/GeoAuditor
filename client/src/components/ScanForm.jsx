@@ -191,10 +191,17 @@ export default function ScanForm({ onScan, loading }) {
           disabled={loading}
           id="btn-scan"
         >
-          <span className="material-symbols-outlined text-[18px]">
-            {loading ? 'progress_activity' : 'bolt'}
-          </span>
-          <span>{loading ? 'Analyzing AI Overview...' : 'Run Generative Audit'}</span>
+          {loading ? (
+            <>
+              <span className="spinner" />
+              <span>Analyzing AI Overview...</span>
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-[18px]">bolt</span>
+              <span>Run Generative Audit</span>
+            </>
+          )}
         </button>
       </form>
     </div>

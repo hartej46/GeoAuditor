@@ -1,4 +1,4 @@
-import { highlightBrand } from '../utils/helpers';
+import { highlightBrand, normalizeEntityTitle } from '../utils/helpers';
 
 /**
  * SnippetCard — Displays matching snippets and cited sources in Sahara design.
@@ -50,7 +50,7 @@ export default function SnippetCard({ entityName, aiOverview, aiMode }) {
                 border: '1px solid var(--outline-variant)',
               }}
             >
-              🔗 {source.title} ({source.source})
+              🔗 {normalizeEntityTitle(source.title, entityName)} ({source.source})
             </span>
           ))}
         </div>

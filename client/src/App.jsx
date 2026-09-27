@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ScanForm from './components/ScanForm';
 import ResultsTable from './components/ResultsTable';
 import GapAnalysis from './components/GapAnalysis';
@@ -22,6 +22,26 @@ export default function App() {
   const [multiResults, setMultiResults] = useState(null);
   const [multiLoading, setMultiLoading] = useState(false);
   const [multiError, setMultiError] = useState(null);
+  const [isLiveApi, setIsLiveApi] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.serpApiKeySet) {
+          setIsLiveApi(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (results && results.demoMode !== undefined) {
+      setIsLiveApi(!results.demoMode);
+    } else if (multiResults && multiResults.demoMode !== undefined) {
+      setIsLiveApi(!multiResults.demoMode);
+    }
+  }, [results, multiResults]);
 
   const handleMultiScan = async (params) => {
     setMultiLoading(true);
@@ -140,15 +160,19 @@ export default function App() {
             </nav>
           </div>
 
-          {/* Right Status */}
+          {/* Right Status — Strictly Mutually Exclusive */}
           <div className="top-nav__status">
-            <div className="status-chip">
-              <span className="status-chip__dot" />
-              <span>SerpApi Active</span>
-            </div>
-            <div className="demo-chip">
-              Demo Sandbox Mode
-            </div>
+            {isLiveApi ? (
+              <div className="status-chip status-chip--live">
+                <span className="status-chip__dot status-chip__dot--live" />
+                <span>Live SerpApi Engine</span>
+              </div>
+            ) : (
+              <div className="demo-chip">
+                <span className="status-chip__dot" style={{ backgroundColor: 'var(--outline)' }} />
+                <span>Demo Sandbox Mode</span>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -156,13 +180,23 @@ export default function App() {
       {/* Main Content Area */}
       <main className="main-content">
         {/* Notification Banner */}
-        <section className="notification-banner">
+        <section className={`notification-banner ${isLiveApi ? 'notification-banner--live' : ''}`}>
           <div className="notification-banner__left">
             <div className="notification-banner__icon">
-              <span className="material-symbols-outlined text-[18px]">verified_user</span>
+              <span className="material-symbols-outlined text-[18px]">
+                {isLiveApi ? 'bolt' : 'verified_user'}
+              </span>
             </div>
             <div className="notification-banner__text">
-              <strong>Demo Sandbox Active</strong> • SerpApi connected • Verified Google AI Overview benchmarks for instant audit.
+              {isLiveApi ? (
+                <>
+                  <strong>Live SerpApi Connected</strong> • Real-time Google AI Overview & AI Mode query synthesis active.
+                </>
+              ) : (
+                <>
+                  <strong>Demo Sandbox Active</strong> • Running on verified Google AI Overview benchmarks (Add SERPAPI_KEY to .env for live scans).
+                </>
+              )}
             </div>
           </div>
           <span style={{ fontSize: '12px', color: 'var(--on-surface-variant)' }}>
