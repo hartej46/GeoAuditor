@@ -74,6 +74,95 @@ function isComparisonContent(text) {
 }
 
 /**
+ * Clean, deduplicate and enrich cited sources from real SerpApi AI Overview references.
+ * Resolves duplicate inline tags vs card references and matches with organic results.
+ */
+function cleanAndEnrichCitedSources(citedSources = [], organicResults = []) {
+  const urlMap = new Map();
+
+  function normalizeUrl(url) {
+    if (!url) return '';
+    try {
+      const u = new URL(url);
+      if (u.hostname.includes('youtube.com')) {
+        const v = u.searchParams.get('v');
+        return v ? `https://www.youtube.com/watch?v=${v}` : (u.origin + u.pathname).toLowerCase().replace(/\/$/, '');
+      }
+      return (u.origin + u.pathname).toLowerCase().replace(/\/$/, '');
+    } catch (e) {
+      return url.split('?')[0].toLowerCase().replace(/\/$/, '');
+    }
+  }
+
+  for (const src of citedSources) {
+    if (!src || !src.link) continue;
+    // Skip empty Google search landing page redirects
+    if (src.link === 'https://www.google.com/' || src.link === 'https://www.google.com') continue;
+
+    const normKey = normalizeUrl(src.link);
+    const domain = extractDomain(src.link);
+
+    if (!urlMap.has(normKey)) {
+      urlMap.set(normKey, {
+        title: (src.title || '').trim(),
+        link: src.link,
+        source: src.source || domain,
+        snippet: (src.snippet || '').trim(),
+        thumbnail: src.thumbnail || '',
+        domain
+      });
+    } else {
+      const existing = urlMap.get(normKey);
+      if (!existing.title && src.title) existing.title = src.title.trim();
+      if (!existing.snippet && src.snippet) existing.snippet = src.snippet.trim();
+      if (!existing.thumbnail && src.thumbnail) existing.thumbnail = src.thumbnail;
+      if ((!existing.source || existing.source === domain) && src.source) existing.source = src.source;
+    }
+  }
+
+  const enriched = Array.from(urlMap.values());
+
+  // Second pass: if any source has an empty or short truncated title, enrich it
+  for (const item of enriched) {
+    // 1. Try matching with organic results from same SERP
+    const matchingOrganic = (organicResults || []).find(r => r.link && normalizeUrl(r.link) === normalizeUrl(item.link));
+    if (matchingOrganic) {
+      if (!item.title || item.title.length < 15) {
+        item.title = matchingOrganic.title || item.title;
+      }
+      if (!item.snippet) {
+        item.snippet = matchingOrganic.snippet || '';
+      }
+    }
+
+    // 2. If title is still missing or truncated (< 12 chars like "Best noise"), generate from URL slug
+    if (!item.title || item.title.trim().length < 12) {
+      try {
+        const parsed = new URL(item.link);
+        const pathSegments = parsed.pathname.split('/').filter(Boolean);
+        const lastSlug = pathSegments[pathSegments.length - 1] || pathSegments[pathSegments.length - 2] || '';
+        
+        if (lastSlug && lastSlug.length > 3) {
+          const readable = lastSlug
+            .replace(/[-_]+/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase())
+            .replace(/\b(And|For|The|In|Of|To|With)\b/gi, m => m.toLowerCase());
+          
+          const domainLabel = item.source && item.source !== item.domain ? item.source : item.domain;
+          item.title = `${readable} — ${domainLabel}`;
+        } else {
+          item.title = `${item.source || item.domain} Article Reference`;
+        }
+      } catch (e) {
+        item.title = `${item.source || item.domain} Reference Link`;
+      }
+    }
+  }
+
+  return enriched;
+}
+
+/**
  * Analyze gap between brand organic pages and AI Overview cited sources.
  *
  * @param {string} brandName - Brand/product name
@@ -127,12 +216,8 @@ function analyzeGap(brandName, organicResults = [], citedSources = [], brandDete
     };
   });
 
-  // 2. Cited Sources Analysis
-  const citedAnalyzed = citedSources.map(src => ({
-    title: src.title || '',
-    link: src.link || '',
-    domain: extractDomain(src.link)
-  }));
+  // 2. Cited Sources Analysis (Deduplicated, merged and enriched with titles & snippets)
+  const citedAnalyzed = cleanAndEnrichCitedSources(citedSources, organicResults);
 
   // 3. Overlap Analysis
   const brandDomains = new Set(brandOrganicPages.map(p => extractDomain(p.link)));

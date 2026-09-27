@@ -79,22 +79,50 @@ export default function GapAnalysis({ gapAnalysis, brandName, brandFound: _brand
         </div>
       )}
 
-      {/* Cited Sources List */}
+      {/* Cited Sources Showcase (Live SerpApi Citations) */}
       {citedSourceAnalysis?.sources && citedSourceAnalysis.sources.length > 0 && (
-        <div className="matrix-card" style={{ marginTop: '24px', padding: '20px' }}>
-          <h4 style={{ margin: '0 0 12px 0', fontSize: '15px', color: 'var(--on-surface)' }}>
-            Sources Cited in Google AI Overview:
-          </h4>
-          <ul className="cited-sources-list">
+        <div className="matrix-card cited-sources-container" style={{ marginTop: '28px', padding: '24px' }}>
+          <div className="cited-sources-header">
+            <div>
+              <h4 className="cited-sources-title">
+                Sources Cited in Google AI Overview
+              </h4>
+              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--on-surface-variant)' }}>
+                Live reference network crawled by SerpApi. These {citedSourceAnalysis.sources.length} third-party review publications and media domains were cited by Google's generative AI engine for this search query.
+              </p>
+            </div>
+            <div className="cited-sources-badge">
+              <span>✓</span>
+              <span>{citedSourceAnalysis.sources.length} Verified Live Citations</span>
+            </div>
+          </div>
+
+          <div className="cited-sources-grid">
             {citedSourceAnalysis.sources.map((src, i) => (
-              <li key={i} className="cited-source-item">
-                <span className="cited-source-domain">{src.domain}</span>
-                <a href={src.link} target="_blank" rel="noopener noreferrer" className="cited-source-link">
-                  {src.title}
-                </a>
-              </li>
+              <div key={i} className="cited-source-card">
+                <div>
+                  <div className="cited-source-card__meta">
+                    <span className="cited-source-card__source">{src.source || src.domain}</span>
+                    <span className="cited-source-card__domain">{src.domain}</span>
+                  </div>
+                  <a
+                    href={src.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cited-source-card__title"
+                    title={src.title || src.link}
+                  >
+                    {src.title || `${src.source || src.domain} Article Reference`} ↗
+                  </a>
+                </div>
+                {src.snippet && (
+                  <div className="cited-source-card__snippet">
+                    “{src.snippet}”
+                  </div>
+                )}
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </section>
