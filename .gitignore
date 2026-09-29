@@ -4,6 +4,9 @@ dist/
 
 # Environment secrets
 .env
+.env.*
+!.env.example
+!.env.*.example
 
 # Local API response cache (dev only)
 server/cache/*.json

@@ -8,10 +8,12 @@
  *  - Serves React build in production
  */
 
-require('dotenv').config();
+const path = require('path');
+// Load environment variables: check server/.env first, then root .env fallback
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const express = require('express');
-const path = require('path');
 const fs = require('fs');
 const { initDB, query, isDBAvailable } = require('./config/db');
 
@@ -19,7 +21,40 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Middleware ---
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json());
+
+let dbInitialized = false;
+async function ensureDB() {
+  if (dbInitialized) return;
+  if (process.env.DATABASE_URL) {
+    initDB();
+    if (isDBAvailable()) {
+      try {
+        await runMigrations();
+      } catch (err) {
+        console.warn('  ⚠ Migration error:', err.message);
+      }
+    }
+  }
+  dbInitialized = true;
+}
+
+// Middleware for serverless warm-up & DB readiness
+app.use(async (req, res, next) => {
+  if (!dbInitialized) {
+    await ensureDB();
+  }
+  next();
+});
 
 // --- API Routes (MVC) ---
 app.use('/api/scan', require('./routes/scanRoutes'));
@@ -35,7 +70,28 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// --- Serve React build in production ---
+// --- Root API status endpoint ---
+app.get('/', (req, res, next) => {
+  const clientBuildPath = path.join(__dirname, '..', 'client', 'dist');
+  if (fs.existsSync(clientBuildPath)) {
+    return next();
+  }
+  res.json({
+    name: 'GEO Auditor API',
+    status: 'online',
+    serpApiKeySet: !!(process.env.SERPAPI_KEY && process.env.SERPAPI_KEY !== 'your_serpapi_key_here'),
+    dbConnected: isDBAvailable(),
+    endpoints: {
+      health: 'GET /api/health',
+      scan: 'POST /api/scan',
+      multiScan: 'POST /api/scan/multi',
+      scans: 'GET /api/scans',
+      scanById: 'GET /api/scans/:id'
+    }
+  });
+});
+
+// --- Serve React build in production (when bundled) ---
 const clientBuildPath = path.join(__dirname, '..', 'client', 'dist');
 if (fs.existsSync(clientBuildPath)) {
   app.use(express.static(clientBuildPath));
@@ -51,6 +107,8 @@ async function runMigrations() {
   if (!isDBAvailable()) return;
 
   const migrationsDir = path.join(__dirname, 'migrations');
+  if (!fs.existsSync(migrationsDir)) return;
+
   const files = fs.readdirSync(migrationsDir)
     .filter(f => f.endsWith('.sql'))
     .sort();
@@ -66,13 +124,9 @@ async function runMigrations() {
   }
 }
 
-// --- Start ---
+// --- Start (for standalone Node / Docker / non-serverless) ---
 async function start() {
-  // Initialize DB (non-fatal if unavailable)
-  initDB();
-
-  // Run migrations
-  await runMigrations();
+  await ensureDB();
 
   app.listen(PORT, () => {
     console.log(`\n  ✦ GEO Auditor running at http://localhost:${PORT}`);
@@ -82,7 +136,12 @@ async function start() {
   });
 }
 
-start().catch(err => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+// Export app for serverless platforms like Vercel
+module.exports = app;
+
+if (!process.env.VERCEL) {
+  start().catch(err => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  });
+}

@@ -8,6 +8,8 @@ services:
     container_name: geoauditor-app
     ports:
       - "3000:3000"
+    env_file:
+      - server/.env
     environment:
       - PORT=3000
       - SERPAPI_KEY=${SERPAPI_KEY:-your_serpapi_key_here}

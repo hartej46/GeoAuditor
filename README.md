@@ -109,9 +109,10 @@ cd client
 npm install
 cd ..
 
-# Set up environment
-cp .env.example .env
-# Edit .env and add your SERPAPI_KEY (or leave default for demo mode)
+# Set up environment files
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+# Edit server/.env and add your SERPAPI_KEY (or leave default for demo mode)
 ```
 
 #### Running Locally
@@ -132,7 +133,7 @@ npm run dev
 ### Running with Live SerpApi Data
 
 1. Get your API key from [serpapi.com](https://serpapi.com/)
-2. Edit `.env`:
+2. Edit `server/.env`:
    ```
    SERPAPI_KEY=your_actual_api_key_here
    ```
@@ -163,6 +164,7 @@ GeoAuditor/
 │   │   ├── utils/              # Helper functions
 │   │   ├── App.jsx             # Root application component
 │   │   └── App.css             # Sahara Warm Minimalism design system
+│   ├── .env.example            # Client env template (VITE_PORT, VITE_API_URL)
 │   └── vite.config.js          # Vite config with API proxy
 ├── server/                     # Express backend (MVC)
 │   ├── controllers/            # Request handlers (scanController)
@@ -171,10 +173,11 @@ GeoAuditor/
 │   ├── routes/                 # API route definitions
 │   ├── config/                 # Database configuration
 │   ├── migrations/             # SQL migration files
+│   ├── .env.example            # Server env template (PORT, SERPAPI_KEY, DATABASE_URL)
 │   └── index.js                # Server entry point
 ├── demo/                       # Demo fixture data
 │   └── sample-response.json    # Pre-tested SerpApi response for offline demo
-├── .env.example                # Environment variables template
+├── .env.example                # Root environment guide / pointers
 └── package.json                # Root package with server scripts
 ```
 

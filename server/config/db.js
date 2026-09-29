@@ -22,6 +22,8 @@ function initDB() {
     return null;
   }
 
+  if (pool) return pool;
+
   pool = new Pool({
     connectionString,
     max: 10,
