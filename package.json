@@ -2,10 +2,10 @@
   "name": "geo-auditor",
   "version": "1.0.0",
   "description": "GEO Auditor — See whether your brand appears in Google's AI-generated search answers and how you compare to competitors.",
-  "main": "server/index.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "node --watch server/index.js"
+    "start": "node index.js",
+    "dev": "node --watch index.js"
   },
   "keywords": [
     "geo",

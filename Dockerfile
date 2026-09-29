@@ -23,6 +23,7 @@ RUN npm ci --only=production
 
 COPY server/ ./server
 COPY demo/ ./demo
+COPY index.js ./index.js
 
 # Copy built static frontend assets into server production route
 COPY --from=client-builder /app/client/dist ./client/dist
