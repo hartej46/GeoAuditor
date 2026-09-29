@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { apiUrl } from '../utils/api';
 
 /**
  * Custom hook for managing scan API calls and state.
@@ -22,7 +23,7 @@ export function useScan() {
     setResults(null);
 
     try {
-      const response = await fetch('/api/scan', {
+      const response = await fetch(apiUrl('/api/scan'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ brand, competitors, query, location, gl }),
@@ -48,7 +49,7 @@ export function useScan() {
     setResults(null);
 
     try {
-      const response = await fetch('/api/scan/multi', {
+      const response = await fetch(apiUrl('/api/scan/multi'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ brand, competitors, queries, location, gl }),

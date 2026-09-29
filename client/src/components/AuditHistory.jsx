@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import VisibilityBadge from './VisibilityBadge';
+import { apiUrl } from '../utils/api';
 
 /**
  * AuditHistory — P1 #10 Historical Audit Log & Trend Analysis Component
@@ -18,7 +19,7 @@ export default function AuditHistory({ onLoadAudit, onReRunAudit }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/scans?limit=25');
+      const res = await fetch(apiUrl('/api/scans?limit=25'));
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
       setHistory(data);
@@ -32,7 +33,7 @@ export default function AuditHistory({ onLoadAudit, onReRunAudit }) {
 
   useEffect(() => {
     let ignore = false;
-    fetch('/api/scans?limit=25')
+    fetch(apiUrl('/api/scans?limit=25'))
       .then(res => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         return res.json();

@@ -10,6 +10,7 @@ import AuditHistory from './components/AuditHistory';
 import ShareOfVoiceChart from './components/ShareOfVoiceChart';
 import GeoComparisonChart from './components/GeoComparisonChart';
 import { useScan } from './hooks/useScan';
+import { apiUrl } from './utils/api';
 import './App.css';
 
 /**
@@ -25,7 +26,7 @@ export default function App() {
   const [isLiveApi, setIsLiveApi] = useState(false);
 
   useEffect(() => {
-    fetch('/api/health')
+    fetch(apiUrl('/api/health'))
       .then((res) => res.json())
       .then((data) => {
         if (data && data.serpApiKeySet) {
@@ -47,7 +48,7 @@ export default function App() {
     setMultiLoading(true);
     setMultiError(null);
     try {
-      const response = await fetch('/api/scan/multi', {
+      const response = await fetch(apiUrl('/api/scan/multi'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),
@@ -66,7 +67,7 @@ export default function App() {
     let payload = item.fullData;
     if (!payload && item.id) {
       try {
-        const res = await fetch(`/api/scans/${item.id}`);
+        const res = await fetch(apiUrl(`/api/scans/${item.id}`));
         if (res.ok) payload = await res.json();
       } catch (err) {
         console.error('[App] Failed to load scan payload:', err.message);
