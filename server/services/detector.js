@@ -21,29 +21,38 @@ function extractAIOverviewContent(aiOverview) {
 
   if (!aiOverview) return { textSnippets, sources };
 
+  // Support both direct and nested ai_overview (e.g. from deferred page_token fetch)
+  const data = aiOverview.ai_overview || aiOverview;
+
   // Extract from text_blocks
-  if (aiOverview.text_blocks) {
-    for (const block of aiOverview.text_blocks) {
-      if (block.snippet) {
-        textSnippets.push(block.snippet);
-      }
+  if (data.text_blocks && Array.isArray(data.text_blocks)) {
+    for (const block of data.text_blocks) {
+      if (block.snippet) textSnippets.push(block.snippet);
+      if (block.text) textSnippets.push(block.text);
+      if (block.title) textSnippets.push(block.title);
+      if (block.heading) textSnippets.push(block.heading);
+
       // List items
-      if (block.list) {
+      if (block.list && Array.isArray(block.list)) {
         for (const item of block.list) {
-          if (item.title) textSnippets.push(item.title);
-          if (item.snippet) textSnippets.push(item.snippet);
+          if (typeof item === 'string') {
+            textSnippets.push(item);
+          } else if (item && typeof item === 'object') {
+            if (item.title) textSnippets.push(item.title);
+            if (item.snippet) textSnippets.push(item.snippet);
+            if (item.text) textSnippets.push(item.text);
+          }
         }
       }
     }
   }
 
-  // Also grab the full markdown if available (broader search surface)
-  if (aiOverview.markdown) {
-    textSnippets.push(aiOverview.markdown);
-  }
+  // Also grab markdown / reconstructed_markdown if available
+  if (data.markdown) textSnippets.push(data.markdown);
+  if (data.reconstructed_markdown) textSnippets.push(data.reconstructed_markdown);
 
-  // Extract cited sources from either references or reference_links (SerpApi format support)
-  const refs = aiOverview.references || aiOverview.reference_links || [];
+  // Extract cited sources from either references or reference_links
+  const refs = data.references || data.reference_links || [];
   for (const ref of refs) {
     sources.push({
       title: ref.title || '',
@@ -68,28 +77,36 @@ function extractAIModeContent(aiModeResponse) {
 
   if (!aiModeResponse) return { textSnippets, sources };
 
+  const data = aiModeResponse.ai_mode || aiModeResponse;
+
   // Extract from text_blocks
-  if (aiModeResponse.text_blocks) {
-    for (const block of aiModeResponse.text_blocks) {
-      if (block.snippet) {
-        textSnippets.push(block.snippet);
-      }
-      if (block.list) {
+  if (data.text_blocks && Array.isArray(data.text_blocks)) {
+    for (const block of data.text_blocks) {
+      if (block.snippet) textSnippets.push(block.snippet);
+      if (block.text) textSnippets.push(block.text);
+      if (block.title) textSnippets.push(block.title);
+      if (block.heading) textSnippets.push(block.heading);
+
+      if (block.list && Array.isArray(block.list)) {
         for (const item of block.list) {
-          if (item.title) textSnippets.push(item.title);
-          if (item.snippet) textSnippets.push(item.snippet);
+          if (typeof item === 'string') {
+            textSnippets.push(item);
+          } else if (item && typeof item === 'object') {
+            if (item.title) textSnippets.push(item.title);
+            if (item.snippet) textSnippets.push(item.snippet);
+            if (item.text) textSnippets.push(item.text);
+          }
         }
       }
     }
   }
 
-  // reconstructed_markdown — broader search surface
-  if (aiModeResponse.reconstructed_markdown) {
-    textSnippets.push(aiModeResponse.reconstructed_markdown);
-  }
+  // reconstructed_markdown & markdown
+  if (data.reconstructed_markdown) textSnippets.push(data.reconstructed_markdown);
+  if (data.markdown) textSnippets.push(data.markdown);
 
   // Extract cited references
-  const refs = aiModeResponse.references || aiModeResponse.reference_links || [];
+  const refs = data.references || data.reference_links || [];
   for (const ref of refs) {
     sources.push({
       title: ref.title || '',

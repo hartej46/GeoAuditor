@@ -159,15 +159,16 @@ async function fetchAIOverview(query, options = {}) {
   const result = await fetchFromSerpApi('google', query, extraParams);
 
   // Handle deferred AI Overview — page_token means content wasn't inline
-  if (result.ai_overview && result.ai_overview.page_token && !result.ai_overview.text_blocks) {
+  if (result.ai_overview && result.ai_overview.page_token && (!result.ai_overview.text_blocks || result.ai_overview.text_blocks.length === 0)) {
     console.log(`  [serpapi] AI Overview deferred — fetching via page_token...`);
     try {
       const fullOverview = await fetchFromSerpApi('google_ai_overview', query, {
         page_token: result.ai_overview.page_token,
         ...extraParams
       });
-      // Merge the full overview back into the result
-      result.ai_overview = { ...result.ai_overview, ...fullOverview };
+      // Merge the full overview back into the result (handling nested response format)
+      const overviewData = fullOverview.ai_overview || fullOverview;
+      result.ai_overview = { ...result.ai_overview, ...overviewData };
     } catch (deferredErr) {
       console.warn(`  [serpapi] Deferred AI Overview fetch failed: ${deferredErr.message}`);
     }
