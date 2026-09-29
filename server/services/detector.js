@@ -44,6 +44,22 @@ function extractAIOverviewContent(aiOverview) {
           }
         }
       }
+
+      // Table support (rows, cells, tabular comparisons)
+      if (block.table) {
+        if (Array.isArray(block.table)) {
+          for (const row of block.table) {
+            if (Array.isArray(row)) textSnippets.push(row.join(' — '));
+            else if (typeof row === 'object') textSnippets.push(Object.values(row).filter(v => typeof v === 'string').join(' — '));
+          }
+        }
+      }
+      if (block.rows && Array.isArray(block.rows)) {
+        for (const row of block.rows) {
+          if (Array.isArray(row)) textSnippets.push(row.join(' — '));
+          else if (typeof row === 'object') textSnippets.push(Object.values(row).filter(v => typeof v === 'string').join(' — '));
+        }
+      }
     }
   }
 
@@ -96,6 +112,22 @@ function extractAIModeContent(aiModeResponse) {
             if (item.snippet) textSnippets.push(item.snippet);
             if (item.text) textSnippets.push(item.text);
           }
+        }
+      }
+
+      // Table support
+      if (block.table) {
+        if (Array.isArray(block.table)) {
+          for (const row of block.table) {
+            if (Array.isArray(row)) textSnippets.push(row.join(' — '));
+            else if (typeof row === 'object') textSnippets.push(Object.values(row).filter(v => typeof v === 'string').join(' — '));
+          }
+        }
+      }
+      if (block.rows && Array.isArray(block.rows)) {
+        for (const row of block.rows) {
+          if (Array.isArray(row)) textSnippets.push(row.join(' — '));
+          else if (typeof row === 'object') textSnippets.push(Object.values(row).filter(v => typeof v === 'string').join(' — '));
         }
       }
     }
