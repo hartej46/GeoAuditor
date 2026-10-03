@@ -360,6 +360,20 @@ Audits whether a brand appears in Google's AI-generated search answers (Google A
 | `location` | string | ❌ | Geographic location (default: `United States`) |
 | `gl` | string | ❌ | Country code (default: `us`) |
 
+### Example Tool Call
+
+```json
+{
+  "name": "check_brand_visibility",
+  "arguments": {
+    "brand": "Notion",
+    "query": "best note taking app for students",
+    "competitors": ["Obsidian", "Evernote"],
+    "serpapi_key": "your_serpapi_key_here"
+  }
+}
+```
+
 ### Claude Desktop & Agent Configuration
 
 Add GEO Auditor to your `claude_desktop_config.json`:
@@ -378,12 +392,12 @@ Add GEO Auditor to your `claude_desktop_config.json`:
 }
 ```
 
-Or connect over HTTP SSE:
+Or connect over HTTP (Streamable HTTP / SSE):
 ```json
 {
   "mcpServers": {
-    "geo-auditor-sse": {
-      "url": "http://localhost:3001/sse"
+    "geo-auditor-http": {
+      "url": "http://localhost:3001/mcp"
     }
   }
 }

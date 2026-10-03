@@ -17,6 +17,7 @@ const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio
 const { z } = require('zod');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 // Attempt loading environment variables from server/.env if available
 const serverEnvPath = path.join(__dirname, '..', 'server', '.env');
@@ -230,13 +231,29 @@ async function startHttpServer() {
   });
 
   // --- Streamable HTTP Transport (POST /mcp) ---
-  const streamableServer = createMcpServer();
-  const streamableTransport = new StreamableHTTPServerTransport();
-  await streamableServer.connect(streamableTransport);
+  const streamableSessions = new Map();
 
   app.all('/mcp', async (req, res) => {
     try {
-      await streamableTransport.handleRequest(req, res, req.body);
+      const sessionId = req.headers['mcp-session-id'];
+      let transport = sessionId ? streamableSessions.get(sessionId) : null;
+
+      if (!transport) {
+        const mcpServer = createMcpServer();
+        transport = new StreamableHTTPServerTransport({
+          sessionIdGenerator: () => crypto.randomUUID()
+        });
+        await mcpServer.connect(transport);
+      }
+
+      await transport.handleRequest(req, res, req.body);
+
+      if (transport.sessionId && !streamableSessions.has(transport.sessionId)) {
+        streamableSessions.set(transport.sessionId, transport);
+        transport.onclose = () => {
+          streamableSessions.delete(transport.sessionId);
+        };
+      }
     } catch (err) {
       console.error('[mcp-server] Streamable HTTP error:', err.message);
       if (!res.headersSent) res.status(500).json({ error: err.message });
