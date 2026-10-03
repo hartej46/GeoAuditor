@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 3000;
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-SerpApi-Key');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
@@ -61,6 +61,9 @@ app.use('/api/scan', require('./routes/scanRoutes'));
 // Mount GET /api/scans/:id on a separate path prefix
 app.use('/api/scans', require('./routes/scanRoutes'));
 
+// --- Public API v1 (read-only visibility endpoint) ---
+app.use('/api/v1', require('./routes/publicApiRoutes'));
+
 // --- Health check ---
 app.get('/api/health', (req, res) => {
   res.json({
@@ -86,7 +89,8 @@ app.get('/', (req, res, next) => {
       scan: 'POST /api/scan',
       multiScan: 'POST /api/scan/multi',
       scans: 'GET /api/scans',
-      scanById: 'GET /api/scans/:id'
+      scanById: 'GET /api/scans/:id',
+      publicVisibility: 'GET /api/v1/visibility?brand=...&query=...'
     }
   });
 });

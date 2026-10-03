@@ -167,10 +167,17 @@ GeoAuditor/
 │   ├── .env.example            # Client env template (VITE_PORT, VITE_API_URL)
 │   └── vite.config.js          # Vite config with API proxy
 ├── server/                     # Express backend (MVC)
-│   ├── controllers/            # Request handlers (scanController)
+│   ├── controllers/            # Request handlers
+│   │   ├── scanController.js   # Internal scan orchestration
+│   │   └── publicApiController.js # Public API visibility endpoint
+│   ├── middleware/             # Express middleware
+│   │   ├── rateLimiter.js      # IP-based rate limiter for sandbox mode
+│   │   └── requestLogger.js    # Request logging (never logs API keys)
 │   ├── services/               # Business logic (serpapi, detector, gapAnalyzer)
 │   ├── models/                 # Database models (Scan)
 │   ├── routes/                 # API route definitions
+│   │   ├── scanRoutes.js       # Internal scan routes
+│   │   └── publicApiRoutes.js  # Public API v1 routes
 │   ├── config/                 # Database configuration
 │   ├── migrations/             # SQL migration files
 │   ├── .env.example            # Server env template (PORT, SERPAPI_KEY, DATABASE_URL)
@@ -187,6 +194,7 @@ GeoAuditor/
 
 | Method | Path | Description |
 |--------|------|-------------|
+| `GET` | `/api/v1/visibility` | **Public API** — Read-only brand visibility analysis |
 | `POST` | `/api/scan` | Run a visibility scan (brand, competitors, query) |
 | `GET` | `/api/scans/:id` | Retrieve a saved scan by ID |
 | `GET` | `/api/health` | Health check (SerpApi key status, DB connection) |
@@ -202,6 +210,123 @@ GeoAuditor/
 ```
 
 ---
+
+## Public Visibility API
+
+GEO Auditor exposes a **public, read-only JSON API** so other tools and AI agents can query brand visibility programmatically.
+
+### `GET /api/v1/visibility`
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `brand` | query string | ✅ | Brand or product name to audit |
+| `query` | query string | ✅ | Search query to analyze |
+| `competitors` | query string | ❌ | Comma-separated competitor names (max 3) |
+| `location` | query string | ❌ | SerpApi location (default: `United States`) |
+| `gl` | query string | ❌ | Country code (default: `us`) |
+| `callback_url` | query string | ❌ | Optional webhook URL for asynchronous fire-and-forget delivery |
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `X-SerpApi-Key` | ❌ | Your own SerpApi key for **live data**. Omit for sandbox mode. |
+
+### Example: Sandbox Mode (no API key needed)
+
+```bash
+curl "http://localhost:3000/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&competitors=Bose%20QuietComfort%20Ultra,Apple%20AirPods%20Max"
+```
+
+### Example: Live Mode (bring your own SerpApi key)
+
+```bash
+curl -H "X-SerpApi-Key: YOUR_SERPAPI_KEY" \
+  "http://localhost:3000/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&competitors=Bose%20QuietComfort%20Ultra,Apple%20AirPods%20Max"
+```
+
+### Example: Asynchronous Webhook / Callback Mode
+
+For AI agents and automated workflows that prefer non-blocking execution, provide `callback_url`:
+
+```bash
+curl -H "X-SerpApi-Key: YOUR_SERPAPI_KEY" \
+  "http://localhost:3000/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&callback_url=https://my-agent.com/webhooks/geo-audit"
+```
+
+The server immediately returns `202 Accepted` in ~50ms:
+
+```json
+{
+  "status": "accepted",
+  "message": "Scan accepted. Results will be delivered to callback_url once complete.",
+  "scanId": "ceab6329-a0d6-4a34-9c9f-685a6307e006",
+  "callbackUrl": "https://my-agent.com/webhooks/geo-audit",
+  "mode": "live",
+  "brand": "Sony WH-1000XM5",
+  "query": "best noise cancelling headphones"
+}
+```
+
+Once the scan finishes, GEO Auditor sends an outgoing `POST` request to `callback_url` with the complete visibility JSON payload and headers:
+- `X-GEO-Auditor-Event: visibility.completed`
+- `X-GEO-Auditor-Delivery: <delivery-uuid>`
+- `Content-Type: application/json`
+
+### Example Response (truncated)
+
+```json
+{
+  "scanId": "a1b2c3d4-...",
+  "query": "best noise cancelling headphones",
+  "location": "United States",
+  "gl": "us",
+  "timestamp": "2026-10-04T00:00:00.000Z",
+  "mode": "sandbox",
+  "dataAvailability": { "aiOverview": true, "aiMode": true },
+  "brand": {
+    "name": "Sony WH-1000XM5",
+    "aiOverview": {
+      "found": true,
+      "inSources": true,
+      "snippets": ["The Sony WH-1000XM5 remains the gold standard for noise cancellation…"],
+      "matchedSources": ["Sony WH-1000XM5 Review - SoundGuys"]
+    },
+    "aiMode": { "found": true, "inSources": true, "snippets": ["…"], "matchedSources": ["…"] }
+  },
+  "competitors": [
+    { "name": "Bose QuietComfort Ultra", "aiOverview": { "found": true, "…": "…" }, "aiMode": { "…": "…" } }
+  ],
+  "gapAnalysis": {
+    "brandOrganicPresence": { "found": true, "bestRank": 3, "pages": ["…"] },
+    "citedSourceAnalysis": { "totalCited": 6, "sources": ["…"] },
+    "overlap": { "brandPagesCited": ["…"], "brandPagesNotCited": ["…"], "citedNotBrand": ["…"] },
+    "structuralGaps": [
+      { "gapType": "no_comparison_content", "severity": "high", "title": "Missing Comparison / Listicle Content", "explanation": "…" }
+    ]
+  },
+  "recommendations": [
+    { "priority": 1, "action": "Publish Category Comparison & Roundup Content", "detail": "…", "effort": "medium", "impact": "high" }
+  ]
+}
+```
+
+### Rate Limiting
+
+Sandbox mode (no `X-SerpApi-Key` header) is rate-limited to **10 requests per minute per IP**. Callers with their own SerpApi key are not rate-limited.
+
+### Error Responses
+
+All errors return structured JSON:
+
+```json
+{ "error": "Missing required parameter: brand", "message": "Provide a brand or product name to audit…" }
+```
+
+| Status | Meaning |
+|--------|---------|
+| `400` | Missing or malformed `brand` or `query` parameter |
+| `429` | Rate limit exceeded (sandbox mode only) |
+| `502` | Upstream SerpApi request failed (live mode only) |
+| `500` | Internal server error |
 
 ## Features by Priority
 

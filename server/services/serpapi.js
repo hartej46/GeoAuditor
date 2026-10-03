@@ -18,8 +18,8 @@ const SERPAPI_BASE = 'https://serpapi.com/search.json';
 /**
  * Check if we're running in demo mode (no valid API key).
  */
-function isDemoMode() {
-  const key = process.env.SERPAPI_KEY;
+function isDemoMode(customKey) {
+  const key = customKey !== undefined ? customKey : process.env.SERPAPI_KEY;
   return !key || key === 'your_serpapi_key_here';
 }
 
@@ -94,7 +94,7 @@ async function fetchFromSerpApi(engine, query, extraParams = {}) {
   if (cached) return cached;
 
   // 2. Build request URL
-  const apiKey = process.env.SERPAPI_KEY;
+  const apiKey = extraParams.apiKey || extraParams.api_key || process.env.SERPAPI_KEY;
   if (!apiKey || apiKey === 'your_serpapi_key_here') {
     throw new Error(
       'SERPAPI_KEY not set. Copy .env.example to .env and add your key.\n' +
@@ -113,6 +113,7 @@ async function fetchFromSerpApi(engine, query, extraParams = {}) {
 
   // Include all extraParams (location, gl, page_token, etc.)
   for (const [key, value] of Object.entries(extraParams)) {
+    if (key === 'apiKey' || key === 'api_key') continue;
     if (value !== undefined && value !== null && value !== '') {
       queryParams[key] = value;
     }
@@ -146,8 +147,9 @@ async function fetchFromSerpApi(engine, query, extraParams = {}) {
  * to the google_ai_overview engine with that token (it expires in ~60s).
  */
 async function fetchAIOverview(query, options = {}) {
+  const customKey = options.apiKey || options.api_key;
   // Demo mode: return fixture data
-  if (isDemoMode()) {
+  if (isDemoMode(customKey)) {
     console.log(`  [demo] Using demo fixture for AI Overview (location: ${options.location || 'United States'})`);
     return loadDemoFixture('ai_overview');
   }
@@ -155,6 +157,7 @@ async function fetchAIOverview(query, options = {}) {
   const extraParams = {};
   if (options.location) extraParams.location = options.location;
   if (options.gl) extraParams.gl = options.gl;
+  if (customKey) extraParams.apiKey = customKey;
 
   const result = await fetchFromSerpApi('google', query, extraParams);
 
@@ -182,8 +185,9 @@ async function fetchAIOverview(query, options = {}) {
  * Uses engine: google_ai_mode.
  */
 async function fetchAIMode(query, options = {}) {
+  const customKey = options.apiKey || options.api_key;
   // Demo mode: return fixture data
-  if (isDemoMode()) {
+  if (isDemoMode(customKey)) {
     console.log(`  [demo] Using demo fixture for AI Mode (location: ${options.location || 'United States'})`);
     return loadDemoFixture('ai_mode');
   }
@@ -191,6 +195,7 @@ async function fetchAIMode(query, options = {}) {
   const extraParams = {};
   if (options.location) extraParams.location = options.location;
   if (options.gl) extraParams.gl = options.gl;
+  if (customKey) extraParams.apiKey = customKey;
 
   return fetchFromSerpApi('google_ai_mode', query, extraParams);
 }
@@ -206,7 +211,8 @@ async function fetchAIMode(query, options = {}) {
  * @returns {Promise<object[]>} Array of organic result objects
  */
 async function fetchOrganicResults(query, options = {}) {
-  if (isDemoMode()) {
+  const customKey = options.apiKey || options.api_key;
+  if (isDemoMode(customKey)) {
     const fixture = loadDemoFixture('ai_overview');
     return fixture.organic_results || [];
   }
@@ -214,6 +220,7 @@ async function fetchOrganicResults(query, options = {}) {
   const extraParams = {};
   if (options.location) extraParams.location = options.location;
   if (options.gl) extraParams.gl = options.gl;
+  if (customKey) extraParams.apiKey = customKey;
 
   const result = await fetchFromSerpApi('google', query, extraParams);
   return result.organic_results || [];

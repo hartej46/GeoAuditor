@@ -211,6 +211,7 @@ const Scan = {
       competitorCount,
       fullData: {
         ...payload,
+        id,
         scanId: id
       }
     };
