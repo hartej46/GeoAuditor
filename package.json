@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "mcp": "node mcp-server/index.js",
+    "test:mcp": "node mcp-server/test-client.js"
   },
   "keywords": [
     "geo",

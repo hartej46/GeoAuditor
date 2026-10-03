@@ -328,6 +328,69 @@ All errors return structured JSON:
 | `502` | Upstream SerpApi request failed (live mode only) |
 | `500` | Internal server error |
 
+---
+
+## Model Context Protocol (MCP) Server
+
+GEO Auditor includes an **official Model Context Protocol (MCP) server** (`mcp-server/`), allowing AI agents (such as Claude Desktop, Claude Code, Cursor, or custom LangChain/LlamaIndex agents) to discover and invoke GEO Auditor directly as a native tool.
+
+### Starting the MCP Server
+
+```bash
+# Start HTTP MCP Server (SSE + Streamable HTTP on port 3001)
+npm run mcp
+```
+
+Endpoints exposed:
+- **SSE Transport:** `http://localhost:3001/sse`
+- **Streamable HTTP:** `http://localhost:3001/mcp`
+- **Discovery / Info:** `http://localhost:3001/`
+
+### Tools Available
+
+#### `check_brand_visibility`
+Audits whether a brand appears in Google's AI-generated search answers (Google AI Overview & AI Mode) vs competitors, returning detection status, matching snippets, authoritative cited sources, structural gap analysis, and recommendations.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `brand` | string | ✅ | Brand or product name to audit (e.g. `Sony WH-1000XM5`, `Notion`) |
+| `query` | string | ✅ | Search query to evaluate in Google AI answers |
+| `competitors` | string or array | ❌ | Competitor names to compare against (max 3) |
+| `serpapi_key` | string | ❌ | Caller's own SerpApi key for live Google AI data |
+| `location` | string | ❌ | Geographic location (default: `United States`) |
+| `gl` | string | ❌ | Country code (default: `us`) |
+
+### Claude Desktop & Agent Configuration
+
+Add GEO Auditor to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "geo-auditor": {
+      "command": "node",
+      "args": [
+        "/path/to/GeoAuditor/mcp-server/index.js",
+        "--stdio"
+      ]
+    }
+  }
+}
+```
+
+Or connect over HTTP SSE:
+```json
+{
+  "mcpServers": {
+    "geo-auditor-sse": {
+      "url": "http://localhost:3001/sse"
+    }
+  }
+}
+```
+
+---
+
 ## Features by Priority
 
 ### P0 — Core (Complete ✅)

@@ -31,6 +31,8 @@
 | 2026-10-04 | Conditional rate limiting: sandbox only | Callers with own key spend their own quota — rate-limiting them would harm usability |
 | 2026-10-04 | Webhook Callback: Immediate 202 + fire-and-forget POST | Spec decision: enables agent/bot integration without queue infrastructure |
 | 2026-10-04 | Thread-safe per-request apiKey in serpapi service | Passes caller key per-request rather than mutating global process.env.SERPAPI_KEY |
+| 2026-10-04 | MCP Server: Thin wrapper over REST API | Spec architecture decision: calls existing /api/v1/visibility to maintain single source of truth |
+| 2026-10-04 | Dual HTTP MCP Transport: SSE + Streamable HTTP | Supports remote AI agents via SSE (/sse) and Streamable HTTP (/mcp) |
 
 ---
 
@@ -76,6 +78,16 @@
 - [x] **Webhook P1 #6** — Basic delivery safety with automatic single retry (1500ms delay) on delivery failure
 - [x] **Webhook P1 #7** — Pre-validation of `callback_url` (HTTP 400 error for invalid/malformed URLs)
 - [x] **Webhook P1 #8** — Redacted delivery logging without key exposure
+
+## Model Context Protocol (MCP) Server ✅ P0+P1 COMPLETE
+
+- [x] **MCP P0 #1** — Setup McpServer instance with official `@modelcontextprotocol/sdk`
+- [x] **MCP P0 #2** — Register `check_brand_visibility` tool with typed Zod parameter schema
+- [x] **MCP P0 #3** — Tool handler calls existing `/api/v1/visibility` REST endpoint (single source of truth)
+- [x] **MCP P0 #4** — Remote HTTP transport (SSE on `/sse`, Streamable HTTP on `/mcp`, plus `--stdio` CLI mode)
+- [x] **MCP P0 #5** — Full verification with official MCP Client test suite (29/29 assertions passed)
+- [x] **MCP P1 #6** — README documentation: architecture, tool parameters, Claude Desktop & SSE configs
+- [x] **MCP P1 #7** — Graceful error handling in tool handler without crashing server
 
 ---
 
@@ -163,5 +175,25 @@
   - Backward compatibility verified (synchronous request without `callback_url` returns HTTP 200 OK inline).
   - Pre-validation of invalid callback URLs verified (HTTP 400 with structured error).
   - Delivery retry safety verified (retries once, handles down host silently without crashing server).
-
-
+### Session 7 — 2026-10-04
+- **Built Model Context Protocol (MCP) Server** per `GEO_Auditor_MCP_Server_Spec.md`:
+  - Created standalone `mcp-server/` package wrapping GEO Auditor's Public Visibility API as an official MCP server.
+  - Implemented `check_brand_visibility` tool using `@modelcontextprotocol/sdk` (v1.32.0) with typed Zod schema (`brand`, `query`, `competitors`, `serpapi_key`, `location`, `gl`).
+  - Implemented pass-through HTTP transport calling `http://localhost:3000/api/v1/visibility` internally, supporting caller's optional `serpapi_key` for live queries without leaking keys or modifying server environment.
+  - Supported multiple MCP transports:
+    - Server-Sent Events (SSE) at `GET /sse` and `POST /messages`.
+    - Streamable HTTP transport at `POST /mcp`.
+    - Direct Stdio transport via `--stdio` flag for Claude Desktop / CLI integration.
+  - Added discovery endpoint (`GET /`) and health check (`GET /health`).
+  - Added robust error handling: tool errors return structured `{ isError: true, content: [...] }` without crashing the MCP process.
+  - Added scripts to root `package.json`: `"mcp": "node mcp-server/index.js"` and `"test:mcp": "node mcp-server/test-client.js"`.
+  - Added comprehensive MCP documentation to `README.md` including Claude Desktop JSON config and tool usage examples.
+- **Automated Verification (29/29 Passed):**
+  - Verified server startup & health check (`GET /health` -> 200 OK, status: `healthy`).
+  - Verified MCP discovery endpoint (`GET /` -> lists tool schemas and capabilities).
+  - Verified MCP Client connection via official `@modelcontextprotocol/sdk/client` + `SSEClientTransport`.
+  - Verified `tools/list` returns `check_brand_visibility` with correct parameter schemas.
+  - Verified sandbox brand visibility execution (returns complete score, citations, gaps, and recommendations).
+  - Verified live real-data execution with caller-provided `serpapi_key` parameter.
+  - Verified tool error handling when required params are missing or internal API returns errors.
+  - Verified Stdio mode CLI flags.

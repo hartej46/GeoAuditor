@@ -1,0 +1,14 @@
+{
+  "name": "geo-auditor-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP (Model Context Protocol) Server for GEO Auditor",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "express": "^4.21.0",
+    "zod": "^3.24.0"
+  }
+}
