@@ -142,8 +142,10 @@ async function start() {
 
 // Export app for serverless platforms like Vercel
 module.exports = app;
+module.exports.start = start;
 
-if (!process.env.VERCEL) {
+// Only start listening when run directly as main script and not on Vercel
+if (require.main === module && !process.env.VERCEL) {
   start().catch(err => {
     console.error('Failed to start server:', err);
     process.exit(1);
