@@ -148,9 +148,9 @@ function createMcpServer() {
 }
 
 /**
- * Start HTTP server (SSE + Streamable HTTP).
+ * Create and configure Express app for MCP HTTP transport.
  */
-async function startHttpServer() {
+function createExpressApp() {
   const app = express();
 
   // Permissive CORS for MCP clients
@@ -260,6 +260,15 @@ async function startHttpServer() {
     }
   });
 
+  return app;
+}
+
+const app = createExpressApp();
+
+/**
+ * Start HTTP server (SSE + Streamable HTTP).
+ */
+async function startHttpServer() {
   return new Promise((resolve) => {
     const serverInstance = app.listen(MCP_PORT, () => {
       console.log(`\n  ✦ GEO Auditor MCP Server running on port ${MCP_PORT}`);
@@ -283,7 +292,7 @@ async function startStdioServer() {
 }
 
 // Entry point selection: stdio vs HTTP
-if (require.main === module) {
+if (require.main === module && !process.env.VERCEL) {
   if (process.argv.includes('--stdio')) {
     startStdioServer().catch(err => {
       console.error('[mcp-server] Stdio fatal error:', err);
@@ -297,8 +306,9 @@ if (require.main === module) {
   }
 }
 
-module.exports = {
-  createMcpServer,
-  startHttpServer,
-  startStdioServer
-};
+module.exports = app;
+module.exports.app = app;
+module.exports.createExpressApp = createExpressApp;
+module.exports.createMcpServer = createMcpServer;
+module.exports.startHttpServer = startHttpServer;
+module.exports.startStdioServer = startStdioServer;
