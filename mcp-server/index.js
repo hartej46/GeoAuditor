@@ -41,7 +41,7 @@ if (fs.existsSync(serverEnvPath)) {
 
 const SERVER_NAME = 'geo-auditor';
 const SERVER_VERSION = '1.0.0';
-const DEFAULT_API_URL = process.env.GEO_AUDITOR_API_URL || 'http://localhost:3000';
+const DEFAULT_API_URL = process.env.GEO_AUDITOR_API_URL;
 const MCP_PORT = parseInt(process.env.MCP_PORT, 10) || 3001;
 
 /**
