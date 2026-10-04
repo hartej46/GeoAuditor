@@ -1,116 +1,161 @@
-# GEO Auditor — Demo Video Script
+# GEO Auditor — 3-Minute Demo Video Script
 
-> **Max Duration:** 3 minutes (under, not over)
-> **Format:** Screen recording, project running locally, core functionality visible
-> **Requirement:** Link must open in incognito/private window without requesting access
-
----
-
-## Pre-Recording Setup
-
-1. Start backend: `npm run dev` from project root
-2. Start frontend: `cd client && npm run dev`
-3. Open browser to `http://localhost:5173`
-4. Clear any previous results
-5. Make sure demo sandbox mode is active (no API key needed for recording)
-6. Set browser zoom to 100%, use a clean browser window (no bookmarks bar)
-7. Screen resolution: 1920x1080 or 2560x1440
+> **Target Duration:** 2:45 – 3:00 minutes (Strict Hackathon Limit: Under 3 minutes)  
+> **Format:** Clean screen recording with voiceover narration  
+> **Track:** Commerce & Market Intelligence (SerpApi Hackathon 2026)  
+> **Requirements:** Full real-world functionality visible, link opens in private/incognito window without requesting access.
 
 ---
 
-## Script (Target: 2:30–2:45)
+## 🎬 Pre-Recording Setup
 
-### Opening (0:00–0:15) — Hook
+### 1. Terminal / Background Services
+Open a split terminal or ensure the background services are running:
+```bash
+# Terminal 1: Backend Server (Port 3000)
+cd server && node index.js
 
-**Show:** Landing page with hero text visible
+# Terminal 2: React Frontend UI (Port 5173)
+cd client && npm run dev
 
-**Narration:**
-> "SEO tools tell you where you rank on Google. But none of them tell you whether your brand appears inside Google's AI-generated answers — the AI Overview and AI Mode responses where users increasingly get their answers without ever clicking a link. GEO Auditor fixes that blind spot."
+# Terminal 3: MCP Server (Port 3001)
+npm run mcp
+```
 
----
-
-### Section 1: The Scan (0:15–0:50) — P0 Demo
-
-**Action:** Fill in the scan form (or show pre-filled demo values)
-- Brand: Sony WH-1000XM5
-- Competitors: Bose QuietComfort Ultra, Apple AirPods Max, Sennheiser Momentum 4
-- Query: best noise cancelling headphones
-
-**Action:** Click "Run Generative Audit" button
-
-**Narration:**
-> "Enter your brand, up to three competitors, and a search query you care about. GEO Auditor calls SerpApi's AI Overview API and AI Mode API to fetch what Google's AI actually says — then scans for your brand and every competitor."
-
-**Show:** Loading state, then results appearing
+### 2. Browser Windows / Tabs Prepared
+Set browser zoom to **100%**, hide bookmarks bar, and open:
+- **Tab 1:** `http://localhost:5173` (GEO Auditor Dashboard)
+- **Tab 2:** Terminal or Postman ready with the Public API & Webhook curl commands
+- **Tab 3:** `http://localhost:3001/` (MCP Discovery endpoint) or Claude Desktop config
 
 ---
 
-### Section 2: Competitor Matrix (0:50–1:15) — P0 Results
+## 🧭 Video Timing Breakdown
 
-**Action:** Scroll to the comparison matrix table
-
-**Narration:**
-> "Instantly, you see a side-by-side comparison. For each brand, we show whether it appears in the AI Overview, in AI Mode, and the exact snippet Google's AI generated about it. In this case, Sony is visible — but let's see what happens when a brand is missing."
-
-**Action:** Point out the visibility badges (Visible/Missing), highlight the matching snippet cards
-
----
-
-### Section 3: Gap Analysis (1:15–1:50) — P1 #7 + #8
-
-**Action:** Scroll down to the gap analysis section (or run a query where the brand IS missing)
-
-**Narration:**
-> "When your brand is missing from AI answers, GEO Auditor doesn't just tell you 'not found' — it explains WHY. We compare your top organic pages against the sources Google's AI actually cited, and identify structural gaps: no comparison content, missing review site coverage, weak organic ranking."
-
-**Action:** Show the structural gaps cards with severity badges
-
-**Narration:**
-> "Then we turn those gaps into actionable recommendations — prioritized by impact and effort — so you know exactly what to fix first."
-
-**Action:** Show the recommendations list
+```
+[0:00 - 0:25]  1. The Hook & The Generative Search Problem
+[0:25 - 1:00]  2. Live Brand Audit & Competitor Matrix
+[1:00 - 1:30]  3. "Why You're Missing" Gap Analysis & Actionable Fixes
+[1:30 - 2:00]  4. Public Visibility REST API & Async Webhook Callbacks
+[2:00 - 2:30]  5. Model Context Protocol (MCP) Server for AI Agents
+[2:30 - 2:48]  6. Multi-Query Score, Historical Trends & Executive Export
+[2:48 - 3:00]  7. Technical Architecture & Outro
+```
 
 ---
 
-### Section 4: Multi-Query Score (1:50–2:20) — P1 #9
-
-**Action:** Switch to Multi-Query Score tab
-
-**Narration:**
-> "One query gives you a snapshot. But for a real visibility picture, you need to check across multiple related queries. Enter five to ten search terms, and GEO Auditor runs the full audit across all of them — producing an aggregate visibility score."
-
-**Action:** Show score card (e.g., "Brand visible in 3 of 5 queries — 60% visibility") and the per-query breakdown table
+## 🎙️ Step-by-Step Script & Actions
 
 ---
 
-### Closing (2:20–2:40) — Technical Summary
+### Step 1: The Hook & The Problem (0:00 – 0:25)
+**Screen:** Show the GEO Auditor landing page hero section on `http://localhost:5173`.  
+**Visual Action:** Slowly hover over the hero title *"Discover if your brand appears in Google's AI-generated search answers"*.
 
-**Show:** Brief flash of the code structure or terminal output
-
-**Narration:**
-> "Under the hood, GEO Auditor is powered by three SerpApi endpoints: the Google AI Overview API, the AI Mode API, and the Organic Search API. There's no external LLM dependency — the gap analysis uses a deterministic heuristic engine. The entire tool runs locally with zero auth required. Built for the SerpApi India Hackathon, Commerce and Market Intelligence track."
-
----
-
-### End Card (2:40–2:50)
-
-**Show:** GitHub repo URL on screen
-
-> "Try it yourself — link in the description."
+**Voiceover Narration:**
+> "Every SEO tool tells you where your website ranks in Google's traditional ten blue links. But search has fundamentally changed. Today, Google's **AI Overview** and **AI Mode** synthesize answers right on the page, satisfying user intent with zero clicks required.
+> 
+> If your brand isn't cited inside that AI synthesis, you are invisible. **GEO Auditor** is a Generative Engine Optimization platform built on SerpApi that audits your brand's AI visibility, compares you to competitors, and shows you exactly how to get cited."
 
 ---
 
-## Recording Tips
+### Step 2: Live Brand Audit & Competitor Matrix (0:25 – 1:00)
+**Screen:** The Audit Scanner form on the dashboard.  
+**Visual Action:**
+1. Show pre-filled inputs:
+   - **Brand:** `Notion` (or `Sony WH-1000XM5`)
+   - **Competitors:** `Obsidian`, `Evernote` (or `Bose QuietComfort Ultra`, `Apple AirPods Max`)
+   - **Search Query:** `best note taking app for students`
+2. Click the primary **"Run Generative Audit"** button.
+3. Show the real-time loading indicator, then results appearing.
+4. Scroll to the **Competitor Comparison Matrix** and hover over the green and red detection badges.
 
-- Use OBS, Loom, or QuickTime for screen recording
-- Record at 1080p minimum
-- Include cursor movements so viewers can follow along
-- Keep mouse movements deliberate and slow
-- Upload to YouTube (unlisted) or Google Drive (anyone with link can view)
-- **Test the link in an incognito window before submitting**
+**Voiceover Narration:**
+> "Let's run a live audit. We'll search for 'best note taking app for students' with Notion as our target brand against competitors Obsidian and Evernote.
+> 
+> Under the hood, GEO Auditor calls SerpApi's Google AI Overview and AI Mode endpoints in parallel. Instantly, our Comparison Matrix reveals the exact visibility breakdown: Notion and Obsidian are synthesized into Google's AI answer, while Evernote is completely absent.
+> 
+> Clicking into any brand reveals the verbatim snippet extracted directly from Google's AI response, showing exactly how the AI represents the product."
 
 ---
 
-## Fallback Script (if P1 #9 isn't ready)
+### Step 3: "Why You're Missing" Gap Analysis & Actionable Fixes (1:00 – 1:30)
+**Screen:** Scroll down to the **Gap Analysis** and **Recommendations** section.  
+**Visual Action:**
+1. Highlight the **Structural Gaps** cards with their severity pills (`[HIGH]`, `[MEDIUM]`).
+2. Point out the **Cited Sources breakdown** (YouTube, review roundups, authority publications).
+3. Hover over the **Prioritized Recommendations** with Effort vs. Impact tags.
 
-If multi-query isn't complete by recording day, skip Section 4 and expand Section 3 with a second example query. Target 2:00–2:15 runtime.
+**Voiceover Narration:**
+> "When a competitor outperforms you or your brand is missing, GEO Auditor doesn't just give you a red flag — it performs a deep structural Gap Analysis.
+> 
+> We compare your brand's organic footprint against the authoritative sources Google's AI actually cited. In this case, it discovers high-severity gaps: missing third-party comparison guides and lack of video citation presence.
+> 
+> It then translates those gaps into prioritized recommendations — ranked by effort and impact — giving marketing and content teams an immediate playbook to earn AI citations."
+
+---
+
+### Step 4: Public Visibility REST API & Async Webhooks (1:30 – 2:00)
+**Screen:** Switch briefly to Terminal / Postman.  
+**Visual Action:**
+1. Execute curl for the Public API:
+   ```bash
+   curl -s "http://localhost:3000/api/v1/visibility?brand=Notion&query=best+note+taking+app+for+students" | jq .
+   ```
+2. Show the clean JSON response containing brand presence, score, cited sources, and gaps.
+3. Execute curl with `callback_url`:
+   ```bash
+   curl -X GET "http://localhost:3000/api/v1/visibility?brand=Notion&query=best+note+taking+app&callback_url=https://example.com/webhook"
+   ```
+4. Highlight the immediate **`HTTP 202 Accepted`** response in ~35ms with `scanId`.
+
+**Voiceover Narration:**
+> "For developer workflows and enterprise integrations, GEO Auditor exposes an official **Public Visibility API** at `/api/v1/visibility`. It returns complete brand detection, cited sources, and gap intelligence in a single structured JSON response.
+> 
+> It also features an **Asynchronous Webhook Callback** system: append a `callback_url`, and the API immediately returns `HTTP 202 Accepted` in under 40 milliseconds, executing the scan in the background and posting the finished payload to your server with delivery headers and automatic retry safety."
+
+---
+
+### Step 5: Model Context Protocol (MCP) Server for AI Agents (2:00 – 2:30)
+**Screen:** Show `http://localhost:3001/` discovery JSON or Claude Desktop config.  
+**Visual Action:**
+1. Show the MCP server running on port `3001` with endpoints for **Streamable HTTP** (`/mcp`) and **SSE** (`/sse`).
+2. Show the registered tool definition: `check_brand_visibility`.
+3. Show Claude Desktop or an AI assistant invoking the tool directly to analyze a brand.
+
+**Voiceover Narration:**
+> "We've also built an official **Model Context Protocol (MCP) Server**, making GEO Auditor natively accessible to autonomous AI agents in Claude Desktop, Cursor, or custom LLM frameworks.
+> 
+> Using the current standard **Streamable HTTP transport** and SSE, AI agents can discover the `check_brand_visibility` tool and run real-time generative search audits on demand. The MCP server acts as a thin wrapper over our REST API, supporting Bring-Your-Own-Key quota protection so teams can plug GEO intelligence directly into their automated agent pipelines."
+
+---
+
+### Step 6: Multi-Query Score, Historical Trends & Executive Export (2:30 – 2:48)
+**Screen:** Switch back to the Web UI at `http://localhost:5173`.  
+**Visual Action:**
+1. Click the **"Multi-Query"** tab to show aggregate brand visibility across 5 queries.
+2. Click the **"History"** tab to show PostgreSQL audit trend charts over time.
+3. Click the **"Export Report"** button to download a polished PDF / Markdown executive brief.
+
+**Voiceover Narration:**
+> "Beyond single queries, GEO Auditor calculates an aggregate **Multi-Query Visibility Score** across your entire category search landscape, tracks historical audit trends in PostgreSQL, and generates client-ready PDF and Markdown executive reports with a single click."
+
+---
+
+### Step 7: Technical Architecture & Outro (2:48 – 3:00)
+**Screen:** Show the GitHub repository page or project README with architecture badge.
+
+**Voiceover Narration:**
+> "Under the hood: SerpApi's Google AI Overview, AI Mode, and Search engines, powered by an Express MVC backend, React 19 frontend, and an official MCP server with 100% deterministic heuristic analysis.
+> 
+> Check out the open-source code on GitHub. Thanks for watching!"
+
+---
+
+## 💡 Practical Recording Checklist
+
+- [ ] **Timing Check:** Rehearse once with a stopwatch — ensure each section hits its mark (keep total runtime between 2:40 and 2:55).
+- [ ] **Mouse Control:** Avoid rapid cursor wiggling; move smoothly and hover over elements as you talk about them.
+- [ ] **Audio Quality:** Use an external microphone or headset in a quiet room with minimal echo.
+- [ ] **Clean Video:** 1080p minimum (1920x1080), 30 or 60 fps, full screen browser.
+- [ ] **Incognito Verification:** Before submitting your recording link (Loom, YouTube Unlisted, or Google Drive), **open it in an Incognito / Private browsing window** to verify it plays without asking for login or permissions.
