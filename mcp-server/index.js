@@ -19,23 +19,28 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
-// Attempt loading environment variables from server/.env if available
-const serverEnvPath = path.join(__dirname, '..', 'server', '.env');
-if (fs.existsSync(serverEnvPath)) {
-  try {
-    const raw = fs.readFileSync(serverEnvPath, 'utf8');
-    for (const line of raw.split('\n')) {
-      const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
-      if (match) {
-        const key = match[1];
-        let val = (match[2] || '').trim();
-        if (val.startsWith("'") && val.endsWith("'")) val = val.slice(1, -1);
-        if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
-        if (!process.env[key]) process.env[key] = val;
+// Attempt loading environment variables from mcp-server/.env or server/.env if available
+const envFiles = [
+  path.join(__dirname, '.env'),
+  path.join(__dirname, '..', 'server', '.env')
+];
+for (const envPath of envFiles) {
+  if (fs.existsSync(envPath)) {
+    try {
+      const raw = fs.readFileSync(envPath, 'utf8');
+      for (const line of raw.split('\n')) {
+        const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+        if (match) {
+          const key = match[1];
+          let val = (match[2] || '').trim();
+          if (val.startsWith("'") && val.endsWith("'")) val = val.slice(1, -1);
+          if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+          if (!process.env[key]) process.env[key] = val;
+        }
       }
+    } catch (e) {
+      // Ignore env load errors
     }
-  } catch (e) {
-    // Ignore env load errors
   }
 }
 
@@ -153,6 +158,9 @@ function createMcpServer() {
 function createExpressApp() {
   const app = express();
 
+  // Trust reverse proxies (Vercel, Cloudflare, etc.) so req.protocol is accurate
+  app.set('trust proxy', 1);
+
   // Permissive CORS for MCP clients
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -169,14 +177,18 @@ function createExpressApp() {
 
   // Root discovery endpoint
   app.get('/', (req, res) => {
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const host = req.headers['x-forwarded-host'] || req.get('host') || `localhost:${MCP_PORT}`;
+    const baseUrl = `${proto}://${host}`;
+
     res.json({
       name: 'GEO Auditor MCP Server',
       version: SERVER_VERSION,
       protocol: 'Model Context Protocol (MCP)',
       transport: {
-        sse: `http://localhost:${MCP_PORT}/sse`,
-        messages: `http://localhost:${MCP_PORT}/messages?sessionId=<sessionId>`,
-        streamableHttp: `http://localhost:${MCP_PORT}/mcp`
+        sse: `${baseUrl}/sse`,
+        messages: `${baseUrl}/messages?sessionId=<sessionId>`,
+        streamableHttp: `${baseUrl}/mcp`
       },
       tools: [
         {
