@@ -233,14 +233,14 @@ GEO Auditor exposes a **public, read-only JSON API** so other tools and AI agent
 ### Example: Sandbox Mode (no API key needed)
 
 ```bash
-curl "http://localhost:3000/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&competitors=Bose%20QuietComfort%20Ultra,Apple%20AirPods%20Max"
+curl "https://geoauditor-server.vercel.app/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&competitors=Bose%20QuietComfort%20Ultra,Apple%20AirPods%20Max"
 ```
 
 ### Example: Live Mode (bring your own SerpApi key)
 
 ```bash
 curl -H "X-SerpApi-Key: YOUR_SERPAPI_KEY" \
-  "http://localhost:3000/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&competitors=Bose%20QuietComfort%20Ultra,Apple%20AirPods%20Max"
+  "https://geoauditor-server.vercel.app/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&competitors=Bose%20QuietComfort%20Ultra,Apple%20AirPods%20Max"
 ```
 
 ### Example: Asynchronous Webhook / Callback Mode
@@ -249,7 +249,7 @@ For AI agents and automated workflows that prefer non-blocking execution, provid
 
 ```bash
 curl -H "X-SerpApi-Key: YOUR_SERPAPI_KEY" \
-  "http://localhost:3000/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&callback_url=https://my-agent.com/webhooks/geo-audit"
+  "https://geoauditor-server.vercel.app/api/v1/visibility?brand=Sony%20WH-1000XM5&query=best%20noise%20cancelling%20headphones&callback_url=https://my-agent.com/webhooks/geo-audit"
 ```
 
 The server immediately returns `202 Accepted` in ~50ms:
@@ -342,9 +342,9 @@ npm run mcp
 ```
 
 Endpoints exposed:
-- **SSE Transport:** `http://localhost:3001/sse`
-- **Streamable HTTP:** `http://localhost:3001/mcp`
-- **Discovery / Info:** `http://localhost:3001/`
+- **SSE Transport:** `https://mcp-server-psi-weld.vercel.app/sse`
+- **Streamable HTTP:** `https://mcp-server-psi-weld.vercel.app/mcp`
+- **Discovery / Info:** `https://mcp-server-psi-weld.vercel.app/`
 
 ### Tools Available
 
@@ -397,7 +397,7 @@ Or connect over HTTP (Streamable HTTP / SSE):
 {
   "mcpServers": {
     "geo-auditor-http": {
-      "url": "http://localhost:3001/mcp"
+      "url": "https://mcp-server-psi-weld.vercel.app/mcp"
     }
   }
 }
